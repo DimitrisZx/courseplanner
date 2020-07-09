@@ -1,14 +1,12 @@
-
 import React from 'react';
 import useStyle from './styles';
-
-
-
-const MainView = props => {
-  const classes = useStyle(); 
+import { TopPart, BottomPart } from './components';
+const MainView = (props) => {
+  const classes = useStyle();
   return (
-    <div className={classes.text}>
-      {'Eyp'}
+    <div className={classes.mainView}>
+      <TopPart />
+      <BottomPart />
     </div>
   )
 }
