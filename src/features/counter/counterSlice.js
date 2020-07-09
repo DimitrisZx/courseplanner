@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export const counterSlice = createSlice({
-  name: 'counter',
+export const stateSlice = createSlice({
+  name: 'state',
   initialState: {
-    value: 0,
+    selectedLessons: [],
+    lessonsList: [{ name: 'Προτυπα' }, { name: 'Κώδικες' }]
   },
   reducers: {
     increment: state => {
@@ -13,16 +14,16 @@ export const counterSlice = createSlice({
       // immutable state based off those changes
       state.value += 1;
     },
-    decrement: state => {
-      state.value -= 1;
+    addLesson: (state, lesson) => {
+      state.selectedLessons.push(lesson.payload)
     },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload;
-    },
+    removeLesson: (state, lesson) => {
+      state.selectedLessons = state.selectedLessons.filter(item => item.name !== lesson.payload.name)
+    }
   },
 });
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export const { increment, addLesson, removeLesson } = stateSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -30,13 +31,13 @@ export const { increment, decrement, incrementByAmount } = counterSlice.actions;
 // code can then be executed and other actions can be dispatched
 export const incrementAsync = amount => dispatch => {
   setTimeout(() => {
-    dispatch(incrementByAmount(amount));
+    // dispatch(incrementByAmount(amount));
   }, 1000);
 };
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
-export const selectCount = state => state.counter.value;
-
-export default counterSlice.reducer;
+export const selectLessons = state => state.state.lessonsList;
+export const selectSelectedLessons = state => state.state.selectedLessons;
+export default stateSlice.reducer;
