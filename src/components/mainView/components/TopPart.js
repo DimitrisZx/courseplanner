@@ -11,7 +11,7 @@ const TopPart = () => {
     >
       <div className={'card-body'}>
         <h5 className="card-title">{'Λίστα Μαθημάτων Εξαμήνου'}</h5>
-        {lessons.map(({ name }, index) => <LessonCard key={index} name={name} />)}
+        {lessons.map((lesson, index) => <LessonCard key={index} lesson={lesson} />)}
       </div>
     </div>
   )

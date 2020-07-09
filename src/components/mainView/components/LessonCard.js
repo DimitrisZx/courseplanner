@@ -1,27 +1,28 @@
 import React from 'react'
-import { addLesson, removeLesson, selectSelectedLessons } from '../../../features/counter/counterSlice';
+import { addLesson, removeLesson, selectSelectedLessons, selectUser } from '../../../features/counter/counterSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils'
-const LessonCard = ({ name, semester }) => {
-  const dispatch = useDispatch()
+const LessonCard = ({ lesson }) => {
+  const { name, semester } = lesson;
+  const dispatch = useDispatch();
   const selectedLessons = useSelector(selectSelectedLessons);
-
-  const isSelected = selectedLessons.some(lesson => lesson.name === name)
+  const { currentSemester } = useSelector(selectUser);
+  const isSelected = selectedLessons.some(lesson => lesson.name === name);
 
   const handleClick = lessonName => {
-    const isLessonSelected = selectedLessons.some(lesson => lesson.name === lessonName)
+    const isLessonSelected = selectedLessons.some(lesson => lesson.name === lessonName);
     not(isLessonSelected) || selectedLessons.length === 0
-      ? dispatch(addLesson({ name: lessonName }))
-      : dispatch(removeLesson({ name: lessonName }))
+      ? dispatch(addLesson({ ...lesson }))
+      : dispatch(removeLesson({ ...lesson }));
   };
 
-  const buttonType = (isSelected, semester = 'current') => {
-    return `btn btn${not(isSelected) ? '-outline' : ''}-${semester === 'current' ? 'success' : 'secondary'} mr-2`
+  const buttonClasses = (isSelected, semester) => {
+    return `btn btn${not(isSelected) ? '-outline' : ''}-${semester === currentSemester ? 'success' : 'secondary'} mr-2`
   }
 
   return (
     <div
-      className={buttonType(isSelected)}
+      className={buttonClasses(isSelected, semester)}
       onClick={() => handleClick(name)}
     >
       {name}
