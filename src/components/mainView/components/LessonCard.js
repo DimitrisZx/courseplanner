@@ -32,7 +32,7 @@ const LessonCard = ({ lesson }) => {
 
     const isLessonSelected = selectedLessons.some(sellesson => sellesson.name === lesson.name);
     isLessonSelected && dispatch(removeLesson({ ...lessonObjectToSubmit }));
-
+    console.log('test')
     dispatch(addLesson({ ...lessonObjectToSubmit }));
     setIsDropdownExpanded(!isDropdownExpanded)
   }
