@@ -1,5 +1,5 @@
 import React from 'react'
-import { addLesson, removeLesson, selectSelectedLessons, selectUser } from '../../../features/counter/counterSlice';
+import { addLesson, removeLesson, selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils'
 const LessonCard = ({ lesson }) => {

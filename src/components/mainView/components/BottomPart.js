@@ -3,12 +3,11 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
 import { repeatX } from 'utils';
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash';
 const lessonDays = [
   'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή'
 ];
 const addExtraZero = num => num < 10 ? '0' : '';
-
 
 const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
   const user = useSelector(selectUser);
