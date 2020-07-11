@@ -2,23 +2,22 @@ import React from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
+import { repeatX } from 'utils';
 import { isEmpty } from 'lodash'
 const lessonDays = [
   'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή'
 ];
 const addExtraZero = num => num < 10 ? '0' : '';
 
+
 const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
   const user = useSelector(selectUser);
-  const availableHoursGen = [];
-  availableHoursGen.length = availableHours;
-  availableHoursGen.fill(0);
   const filledHours = lessonsInDay.map(lesson => lesson.hours);
   return (
     <tr>
       <th scope="row">{dayName}</th>
       {
-        availableHoursGen.map((_, index) => {
+        repeatX(availableHours).map((_, index) => {
           const cellTime = index + 8
           let isCellFilled = false;
           let lessonName = '-';
@@ -36,10 +35,7 @@ const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
 }
 
 const genHours = (times) => {
-  const timesToDo = [];
-  timesToDo.length = times;
-  timesToDo.fill(0)
-  const arrayToReturn = timesToDo.map((_, index) =>
+  const arrayToReturn = repeatX(times).map((_, index) =>
     <th key={index} scope={'col'}>{`${addExtraZero((index + 8))}${index + 8}:00`}</th>)
   return arrayToReturn;
 }
