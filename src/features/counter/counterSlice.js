@@ -21,12 +21,10 @@ export const stateSlice = createSlice({
         },
         {
           name: 'Προτυπα-Ε',
-          day: 'Δευτέρα',
-          hours: [13, 14],
           semester: '3',
           type: 'workshop',
           days: [
-            { day: 'Δευτέρα', hours: [[8, 11]] },
+            { day: 'Δευτέρα', hours: [[8, 10]] },
             { day: 'Τρίτη', hours: [[14, 16]] },
             { day: 'Τετάρτη', hours: [[18, 20]] },
           ],
@@ -47,12 +45,10 @@ export const stateSlice = createSlice({
         },
         {
           name: 'Κώδικες-Ε',
-          day: 'Πέμπτη',
-          hours: [11, 12],
           semester: '5',
           type: 'workshop',
           days: [
-            { day: 'Δευτέρα', hours: [[8, 11]] },
+            { day: 'Δευτέρα', hours: [[8, 11], [12, 14]] },
             { day: 'Τρίτη', hours: [[14, 16]] },
             { day: 'Τετάρτη', hours: [[18, 20]] },
           ],

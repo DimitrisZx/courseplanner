@@ -11,27 +11,40 @@ const LessonCard = ({ lesson }) => {
   const isSelected = selectedLessons.some(lesson => lesson.name === name);
 
   const handleClick = lessonName => {
+    if (lesson.type === 'workshop') {
+      setIsDropdownExpanded(!isDropdownExpanded)
+      return;
+    }
     const isLessonSelected = selectedLessons.some(lesson => lesson.name === lessonName);
     not(isLessonSelected) || selectedLessons.length === 0
       ? dispatch(addLesson({ ...lesson }))
       : dispatch(removeLesson({ ...lesson }));
-    if (lesson.type === 'workshop') {
-      setIsDropdownExpanded(!isDropdownExpanded)
-    }
-  };
-  const workShopClick = () => {
 
+  };
+  const handleWorkShopClick = (lesson, hourSet, day) => {
+    const lessonObjectToSubmit = {
+      name: lesson.name,
+      semester: lesson.semester,
+      hours: hourSet,
+      type: 'workshop',
+      day: day
+    };
+
+    const isLessonSelected = selectedLessons.some(sellesson => sellesson.name === lesson.name);
+    isLessonSelected && dispatch(removeLesson({ ...lessonObjectToSubmit }));
+
+    dispatch(addLesson({ ...lessonObjectToSubmit }));
+    setIsDropdownExpanded(!isDropdownExpanded)
   }
 
   const buttonClasses = (isSelected, semester, type) => {
     return `btn btn${not(isSelected) ? '-outline' : ''}-${semester === currentSemester ? 'success' : 'secondary'} mr-2 ${type === 'workshop' && 'dropdown-toggle'}`
   }
-  console.log(lesson)
   return (
     <span className='btn-container' style={{ position: 'relative' }}>
       <button
         className={buttonClasses(isSelected, semester, type)}
-        onClick={() => handleClick(name)}
+        onClick={lesson.type === 'theory' ? () => handleClick(name) : () => setIsDropdownExpanded(!isDropdownExpanded)}
         id={`lesson-${name}-${type}`}
         type={'button'}
       >
@@ -39,15 +52,25 @@ const LessonCard = ({ lesson }) => {
       </button>
       {type === 'workshop' && isDropdownExpanded &&
         <div
-          style={{ display: 'block', top: '35px' }}
+          style={{ display: 'block', top: '35px', cursor: 'pointer' }}
           className="dropdown-menu"
         >
-          {lesson.days.map(day =>
-            <a
-              className="dropdown-item" href="#"
-            >
-              {`${day.day} ${day.hours[0][0]}:00-${day.hours[0][1]}:00`}
-            </a>)}
+          {lesson.days.map(
+            day => {
+              const dayName = day.day;
+              return day.hours.map((hourSet, index) =>
+                <div
+                  key={index}
+
+                  className={'dropdown-item'}
+                  onClick={() => handleWorkShopClick(lesson, hourSet, day.day)}
+                >
+                  {`${dayName} ${hourSet[0]}:00-${hourSet[1]}:00`}
+                </div>
+              )
+            }
+          )
+          }
         </div>
       }
     </span>

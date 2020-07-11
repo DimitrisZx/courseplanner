@@ -1,9 +1,8 @@
 import React from 'react';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
 import { repeatX } from 'utils';
-import { isEmpty } from 'lodash';
 const lessonDays = [
   'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή'
 ];
