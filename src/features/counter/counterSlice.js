@@ -12,9 +12,51 @@ export const stateSlice = createSlice({
     selectedLessons: [],
     lessonsList:
       [
-        { name: 'Προτυπα', day: 'Δευτέρα', hours: [8, 11], semester: '3' },
-        { name: 'Βιβλιοθήκες', day: 'Δευτέρα', hours: [14, 16], semester: '3' },
-        { name: 'Κώδικες', day: 'Πέμπτη', hours: [15, 17], semester: '5' },
+        {
+          name: 'Προτυπα Θ',
+          day: 'Δευτέρα',
+          hours: [8, 11],
+          semester: '3',
+          type: 'theory'
+        },
+        {
+          name: 'Προτυπα Ε',
+          day: 'Δευτέρα',
+          hours: [13, 14],
+          semester: '3',
+          type: 'workshop',
+          groups: [
+            { name: 'group-a', day: 'Δευτέρα', hours: [8, 11] },
+            { name: 'group-b', day: 'Τρίτη', hours: [14, 16] },
+            { name: 'group-c', day: 'Τετάρτη', hours: [18, 20] },
+          ],
+        },
+        {
+          name: 'Βιβλιοθήκες Θ',
+          day: 'Δευτέρα',
+          hours: [17, 18],
+          semester: '3',
+          type: 'theory'
+        },
+        {
+          name: 'Κώδικες Θ',
+          day: 'Πέμπτη',
+          hours: [15, 17],
+          semester: '5',
+          type: 'theory'
+        },
+        {
+          name: 'Κώδικες Ε',
+          day: 'Πέμπτη',
+          hours: [11, 12],
+          semester: '5',
+          type: 'workshop',
+          groups: [
+            { name: 'group-a', day: 'Δευτέρα', hours: [11, 12] },
+            { name: 'group-b', day: 'Τρίτη', hours: [15, 16] },
+            { name: 'group-c', day: 'Τετάρτη', hours: [17, 18] },
+          ],
+        },
       ]
   },
   reducers: {
