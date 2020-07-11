@@ -10,7 +10,7 @@ const lessonDays = [
 const addExtraZero = num => num < 10 ? '0' : '';
 
 const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
-  const user = useSelector(selectUser);
+  const { currentSemester } = useSelector(selectUser);
   const filledHours = lessonsInDay.map(lesson => lesson.hours);
   return (
     <tr>
@@ -20,13 +20,17 @@ const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
           const cellTime = index + 8
           let isCellFilled = false;
           let lessonName = '-';
+          let lessonColor = '-';
           filledHours.forEach(hourTuple => {
             if (cellTime >= hourTuple[0] && cellTime <= hourTuple[1]) {
-              lessonName = cellTime === hourTuple[0] && lessonsInDay.find(lesson => lesson.hours[0] === hourTuple[0] && lesson.hours[1] === hourTuple[1]).name
+              const currentLesson = lessonsInDay.find(lesson => lesson.hours[0] === hourTuple[0] && lesson.hours[1] === hourTuple[1]);
+              lessonName = cellTime === hourTuple[0] && currentLesson.name
               isCellFilled = true;
+              lessonColor = currentLesson.semester === currentSemester ? 'success' : 'secondary';
+              console.log(lessonColor)
             }
           })
-          return <td className={`bg-${isCellFilled ? 'success' : 'light'}`} key={index}>{lessonName}</td>
+          return <td className={`bg-${isCellFilled ? lessonColor : 'light'}`} key={index}>{lessonName}</td>
         })
       }
     </tr>
