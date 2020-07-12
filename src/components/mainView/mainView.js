@@ -1,7 +1,8 @@
 import React from 'react';
 import useStyle from './styles';
 import { TopPart, BottomPart } from './components';
-const MainView = (props) => {
+
+const MainView = () => {
   const classes = useStyle();
   return (
     <div className={classes.mainView}>

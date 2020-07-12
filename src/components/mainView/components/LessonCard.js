@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { addLesson, removeLesson, selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { not } from 'utils'
+import { not } from 'utils';
+
 const LessonCard = ({ lesson }) => {
   const [isDropdownExpanded, setIsDropdownExpanded] = useState(false);
   const { name, semester, type } = lesson;
@@ -32,14 +33,17 @@ const LessonCard = ({ lesson }) => {
 
     const isLessonSelected = selectedLessons.some(sellesson => sellesson.name === lesson.name);
     isLessonSelected && dispatch(removeLesson({ ...lessonObjectToSubmit }));
-    console.log('test')
     dispatch(addLesson({ ...lessonObjectToSubmit }));
     setIsDropdownExpanded(!isDropdownExpanded)
   }
 
-  const buttonClasses = (isSelected, semester, type) => {
-    return `btn btn${not(isSelected) ? '-outline' : ''}-${semester === currentSemester ? 'success' : 'secondary'} mr-2 ${type === 'workshop' && 'dropdown-toggle'}`
+  const buttonClasses = (isSelected, lessonSemester, lessonType) => {
+    const selected = not(isSelected) ? '-outline' : ''
+    const semesterColor = lessonSemester === currentSemester ? 'success' : 'secondary';
+    const dropdownIfWorkshop = lessonType === 'workshop' && 'dropdown-toggle';
+    return `btn btn${selected}-${semesterColor} mr-2 ${dropdownIfWorkshop}`;
   }
+
   return (
     <span className='btn-container' style={{ position: 'relative' }}>
       <button
@@ -53,7 +57,8 @@ const LessonCard = ({ lesson }) => {
       {type === 'workshop' && isDropdownExpanded &&
         <div
           style={{ display: 'block', top: '35px', cursor: 'pointer' }}
-          className="dropdown-menu"
+          className={'dropdown-menu'}
+          onPointerLeave={() => setIsDropdownExpanded(!isDropdownExpanded)}
         >
           {lesson.days.map(
             day => {
@@ -61,7 +66,6 @@ const LessonCard = ({ lesson }) => {
               return day.hours.map((hourSet, index) =>
                 <div
                   key={index}
-
                   className={'dropdown-item'}
                   onClick={() => handleWorkShopClick(lesson, hourSet, day.day)}
                 >
