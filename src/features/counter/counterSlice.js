@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { genDaysTable } from 'utils';
 
 export const stateSlice = createSlice({
   name: 'state',
@@ -10,6 +11,7 @@ export const stateSlice = createSlice({
       AM: '14024',
     },
     selectedLessons: [],
+    tableValues: genDaysTable(5, 13),
     lessonsList:
       [
         {
@@ -68,6 +70,12 @@ export const stateSlice = createSlice({
     },
     removeLesson: (state, lesson) => {
       state.selectedLessons = state.selectedLessons.filter(item => item.name !== lesson.payload.name)
+    },
+    fillHour: (state, payload) => {
+      const day = state.tableValues[payload.day];
+      payload.times.forEach(time => {
+        day[time] = day[time] + 1;
+      });
     }
   },
 });
@@ -89,5 +97,6 @@ export const incrementAsync = amount => dispatch => {
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 export const selectUser = state => state.state.user;
 export const selectLessons = state => state.state.lessonsList;
+export const selectTableValues = state => state.state.tableValues;
 export const selectSelectedLessons = state => state.state.selectedLessons;
 export default stateSlice.reducer;

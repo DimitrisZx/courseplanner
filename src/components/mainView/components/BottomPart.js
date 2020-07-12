@@ -1,15 +1,19 @@
 import React from 'react';
 
 import { useSelector } from 'react-redux';
-import { selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
-import { repeatX } from 'utils';
-const lessonDays = [
-  'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή'
-];
-const addExtraZero = num => num < 10 ? '0' : '';
+import { selectSelectedLessons, selectUser, selectTableValues } from 'features/counter/counterSlice';
+import { repeatX, addExtraZero, lessonDays } from 'utils';
+import { groupBy } from 'lodash'
+
+const findConflicts = (selectedLessons) => {
+  const daysWithLessons = groupBy(selectedLessons, 'day')
+  console.log(daysWithLessons)
+}
 
 const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
   const { currentSemester } = useSelector(selectUser);
+  const tableValues = useSelector(selectTableValues);
+  console.log(tableValues)
   const filledHours = lessonsInDay.map(lesson => lesson.hours);
   return (
     <tr>
@@ -19,7 +23,7 @@ const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
           const cellTime = index + 8
           let isCellFilled = false;
           let lessonName = '-';
-          let lessonColor = '-';
+          let lessonColor;
           filledHours.forEach(hourTuple => {
             if (cellTime >= hourTuple[0] && cellTime <= hourTuple[1]) {
               const currentLesson = lessonsInDay.find(lesson => lesson.hours[0] === hourTuple[0] && lesson.hours[1] === hourTuple[1]);
@@ -43,6 +47,7 @@ const genHours = (times) => {
 
 const BottomPart = () => {
   const selectedLessons = useSelector(selectSelectedLessons);
+  findConflicts(selectedLessons)
   return (
     <table className="table">
       <thead>
