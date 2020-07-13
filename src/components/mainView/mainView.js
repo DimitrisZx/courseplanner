@@ -1,13 +1,14 @@
 import React from 'react';
 import useStyle from './styles';
-import { TopPart, BottomPart } from './components';
+import { TopPart, BottomPart, BottomPartv2 } from './components';
 
 const MainView = () => {
   const classes = useStyle();
   return (
     <div className={classes.mainView}>
       <TopPart />
-      <BottomPart />
+      {/* <BottomPart /> */}
+      <BottomPartv2 />
     </div>
   )
 }
