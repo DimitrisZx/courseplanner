@@ -17,7 +17,7 @@ export const stateSlice = createSlice({
         {
           name: 'Προτυπα-Θ',
           day: 'Δευτέρα',
-          hours: [8, 11],
+          hours: [15, 17],
           semester: '3',
           type: 'theory'
         },
@@ -40,7 +40,7 @@ export const stateSlice = createSlice({
         },
         {
           name: 'Κώδικες-Θ',
-          day: 'Πέμπτη',
+          day: 'Δευτέρα',
           hours: [15, 17],
           semester: '5',
           type: 'theory'
@@ -66,21 +66,18 @@ export const stateSlice = createSlice({
       state.value += 1;
     },
     addLesson: (state, lesson) => {
-      state.selectedLessons.push(lesson.payload)
+      state.selectedLessons.push(lesson.payload);
     },
     removeLesson: (state, lesson) => {
       state.selectedLessons = state.selectedLessons.filter(item => item.name !== lesson.payload.name)
     },
-    fillHour: (state, payload) => {
-      const day = state.tableValues[payload.day];
-      payload.times.forEach(time => {
-        day[time] = day[time] + 1;
-      });
+    editSchedule: (state, payload) => {
+      state.tableValues = payload.payload.newTableValues;
     }
   },
 });
 
-export const { increment, addLesson, removeLesson } = stateSlice.actions;
+export const { increment, addLesson, removeLesson, editSchedule } = stateSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This

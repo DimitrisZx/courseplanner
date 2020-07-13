@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
-import { addLesson, removeLesson, selectSelectedLessons, selectUser } from 'features/counter/counterSlice';
+import {
+  addLesson, removeLesson, selectSelectedLessons, selectUser, selectTableValues, editSchedule
+} from 'features/counter/counterSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils';
+import { range, cloneDeep, isEmpty, indexOf } from 'lodash';
 
 const LessonCard = ({ lesson }) => {
   const [isDropdownExpanded, setIsDropdownExpanded] = useState(false);
@@ -9,17 +12,39 @@ const LessonCard = ({ lesson }) => {
   const dispatch = useDispatch();
   const selectedLessons = useSelector(selectSelectedLessons);
   const { currentSemester } = useSelector(selectUser);
+  const tableValues = useSelector(selectTableValues)
   const isSelected = selectedLessons.some(lesson => lesson.name === name);
 
-  const handleClick = lessonName => {
+  const handleClick = lesson => {
+    const { hours: lessonHours, day: lessonDay, name: lName } = lesson;
+    const localTableValues = cloneDeep(tableValues);
+    const { hours: hoursRangeToModify } = localTableValues.find(day => day.name === lessonDay)
+
     if (lesson.type === 'workshop') {
       setIsDropdownExpanded(!isDropdownExpanded)
       return;
     }
-    const isLessonSelected = selectedLessons.some(lesson => lesson.name === lessonName);
-    not(isLessonSelected) || selectedLessons.length === 0
+
+    const hourValuesToUpdate = range(lessonHours[0], lessonHours[1]);
+    hourValuesToUpdate.forEach(lessonHour => {
+      const hourToUpdate = hoursRangeToModify.find(({ hour }) => hour === lessonHour);
+
+      if (!isSelected) {
+        hourToUpdate.writes += 1;
+        hourToUpdate.lessons.push(lName);
+      } else {
+        hourToUpdate.writes -= 1;
+        const lessonIndex = hourToUpdate.lessons.indexOf(lName);
+        hourToUpdate.lessons.splice(lessonIndex, 1)
+      }
+    })
+    const tableValuesPayload = { newTableValues: localTableValues }
+
+    not(isSelected) || isEmpty(selectedLessons)
       ? dispatch(addLesson({ ...lesson }))
       : dispatch(removeLesson({ ...lesson }));
+
+    dispatch(editSchedule(tableValuesPayload))
 
   };
   const handleWorkShopClick = (lesson, hourSet, day) => {
@@ -48,7 +73,7 @@ const LessonCard = ({ lesson }) => {
     <span className='btn-container' style={{ position: 'relative' }}>
       <button
         className={buttonClasses(isSelected, semester, type)}
-        onClick={lesson.type === 'theory' ? () => handleClick(name) : () => setIsDropdownExpanded(!isDropdownExpanded)}
+        onClick={lesson.type === 'theory' ? () => handleClick(lesson) : () => setIsDropdownExpanded(!isDropdownExpanded)}
         id={`lesson-${name}-${type}`}
         type={'button'}
       >
