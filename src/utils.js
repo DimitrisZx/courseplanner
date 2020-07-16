@@ -18,7 +18,9 @@ const day = (name, range) => {
 
 const lessonDays = ['Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή'];
 const genDaysTable = () => {
-  return lessonDays.map(lday => day(lday, [8, 21]));
+  return lessonDays.map(lday => day(lday, [8, 22]));
 }
 
-export { not, repeatX, addExtraZero, genDaysTable, lessonDays };
+const firstLessonHour = 8;
+
+export { not, repeatX, addExtraZero, genDaysTable, lessonDays, firstLessonHour };

@@ -15,52 +15,47 @@ const LessonCard = ({ lesson }) => {
   const tableValues = useSelector(selectTableValues)
   const isSelected = selectedLessons.some(lesson => lesson.name === name);
 
+
   const handleClick = lesson => {
-    const { hours: lessonHours, day: lessonDay, name: lName } = lesson;
+    const { hours: lessonHours, day: lessonDay, name: lName, type } = lesson;
     const localTableValues = cloneDeep(tableValues);
     const { hours: hoursRangeToModify } = localTableValues.find(day => day.name === lessonDay)
-
-    if (lesson.type === 'workshop') {
-      setIsDropdownExpanded(!isDropdownExpanded)
-      return;
-    }
 
     const hourValuesToUpdate = range(lessonHours[0], lessonHours[1]);
     hourValuesToUpdate.forEach(lessonHour => {
       const hourToUpdate = hoursRangeToModify.find(({ hour }) => hour === lessonHour);
+      if (isSelected) {
+        if (type === 'workshop') {
+          const hoursThatHadThisWorkshop = localTableValues.map(day => day.hours.filter(hour => hour.lessons.includes(lName))).flat();
+          console.log(hoursThatHadThisWorkshop)
+          hoursThatHadThisWorkshop.forEach(hour => {
+            hour.writes -= 1;
+            const lessonIndex = hour.lessons.indexOf(lName);
+            hour.lessons.splice(lessonIndex, 1)
+          })
 
-      if (!isSelected) {
-        hourToUpdate.writes += 1;
-        hourToUpdate.lessons.push(lName);
+        } else if (type === 'theory') {
+          hourToUpdate.writes -= 1;
+          const lessonIndex = hourToUpdate.lessons.indexOf(lName);
+          hourToUpdate.lessons.splice(lessonIndex, 1)
+        }
       } else {
-        hourToUpdate.writes -= 1;
-        const lessonIndex = hourToUpdate.lessons.indexOf(lName);
-        hourToUpdate.lessons.splice(lessonIndex, 1)
+        if (type === 'workshop') {
+          hourToUpdate.writes += 1;
+          hourToUpdate.lessons.push(lName);
+        } else if (type === 'theory') {
+          hourToUpdate.writes += 1;
+          hourToUpdate.lessons.push(lName);
+        }
       }
     })
     const tableValuesPayload = { newTableValues: localTableValues }
-
+    console.log(lesson)
     not(isSelected) || isEmpty(selectedLessons)
       ? dispatch(addLesson({ ...lesson }))
       : dispatch(removeLesson({ ...lesson }));
-
     dispatch(editSchedule(tableValuesPayload))
-
   };
-  const handleWorkShopClick = (lesson, hourSet, day) => {
-    const lessonObjectToSubmit = {
-      name: lesson.name,
-      semester: lesson.semester,
-      hours: hourSet,
-      type: 'workshop',
-      day: day
-    };
-
-    const isLessonSelected = selectedLessons.some(sellesson => sellesson.name === lesson.name);
-    isLessonSelected && dispatch(removeLesson({ ...lessonObjectToSubmit }));
-    dispatch(addLesson({ ...lessonObjectToSubmit }));
-    setIsDropdownExpanded(!isDropdownExpanded)
-  }
 
   const buttonClasses = (isSelected, lessonSemester, lessonType) => {
     const selected = not(isSelected) ? '-outline' : ''
@@ -88,14 +83,26 @@ const LessonCard = ({ lesson }) => {
           {lesson.days.map(
             day => {
               const dayName = day.day;
-              return day.hours.map((hourSet, index) =>
-                <div
-                  key={index}
-                  className={'dropdown-item'}
-                  onClick={() => handleWorkShopClick(lesson, hourSet, day.day)}
-                >
-                  {`${dayName} ${hourSet[0]}:00-${hourSet[1]}:00`}
-                </div>
+
+              return day.hours.map((hourSet, index) => {
+                const lessonObjectToSubmit = {
+                  name: lesson.name,
+                  semester: lesson.semester,
+                  hours: hourSet,
+                  type: 'workshop',
+                  day: day.day
+                };
+
+                return (
+                  <div
+                    key={index}
+                    className={'dropdown-item'}
+                    onClick={() => handleClick(lessonObjectToSubmit)}
+                  >
+                    {`${dayName} ${hourSet[0]}:00-${hourSet[1]}:00`}
+                  </div>
+                )
+              }
               )
             }
           )

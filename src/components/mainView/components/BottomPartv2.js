@@ -2,12 +2,45 @@ import React from 'react';
 
 import { useSelector } from 'react-redux';
 import { selectSelectedLessons, selectUser, selectTableValues } from 'features/counter/counterSlice';
-import { repeatX, addExtraZero, lessonDays } from 'utils';
+import { repeatX, addExtraZero, lessonDays, firstLessonHour } from 'utils';
+
+const shouldAddComma = (index, array) => index !== array.length - 1 ? ', ' : '';
+const lessonNamesReducer = (acc, cur, index, lessonsList) => `${acc}${cur}${shouldAddComma(index, lessonsList)}`
 
 const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
   const { currentSemester } = useSelector(selectUser);
   const tableValues = useSelector(selectTableValues);
   const filledHours = lessonsInDay.map(lesson => lesson.hours);
+
+  const defineCellProperties = (tableValues, dayName, cellTime) => {
+    const currentDay = tableValues.find(day => day.name === dayName)
+    const currentHour = currentDay.hours.find(hour => hour.hour === cellTime);
+    const { writes, lessons } = currentHour;
+    const cellProps = {
+      cellColor: writes === 0 ? 'light' : writes > 1 ? 'danger' : 'success',
+      lessons,
+    }
+    return cellProps;
+  }
+
+  return (
+    <tr>
+      <th scope='row'>{dayName}</th>
+      {
+        repeatX(availableHours).map((_, index) => {
+          const cellTime = index + firstLessonHour;
+          const { cellColor, lessons } = defineCellProperties(tableValues, dayName, cellTime);
+          const lessonNames = lessons.reduce(lessonNamesReducer, ``)
+          return <td className={`bg-${cellColor}`} key={index}>{lessonNames || '-'}</td>
+        })
+      }
+    </tr>
+  )
+
+
+
+
+
   return (
     <tr>
       <th scope="row">{dayName}</th>
