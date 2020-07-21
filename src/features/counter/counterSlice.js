@@ -1,5 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { genDaysTable } from 'utils';
+
+
+
+const url = 'http://localhost:5000/lessons';
+const headers = {
+  method: 'GET', // *GET, POST, PUT, DELETE, etc.
+  mode: 'cors', // no-cors, *cors, same-origin
+  cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+  credentials: 'same-origin', // include, *same-origin, omit
+  headers: {
+    'Content-Type': 'application/json'
+    // 'Content-Type': 'application/x-www-form-urlencoded',
+  },
+  redirect: 'follow', // manual, *follow, error
+  referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+}
+export const getLessonsAsync = createAsyncThunk(
+  'app/fetchLessons',
+  async (_, thunkAPI) => {
+    const response = await fetch(url);
+    const parsed = await response.json();
+    return parsed;
+  }
+)
+
+// const fetchUserById = createAsyncThunk(
+//   'users/fetchByIdStatus',
+//   async (userId, thunkAPI) => {
+//     const response = await userAPI.fetchById(userId)
+//     return response.data
+//   }
+// )
 
 export const stateSlice = createSlice({
   name: 'state',
@@ -12,6 +44,7 @@ export const stateSlice = createSlice({
     },
     selectedLessons: [],
     tableValues: genDaysTable(5, 13),
+    asyncLessons: [],
     lessonsList:
       [
         {
@@ -75,6 +108,11 @@ export const stateSlice = createSlice({
       state.tableValues = payload.payload.newTableValues;
     }
   },
+  extraReducers: {
+    [getLessonsAsync.fulfilled]: (state, { payload }) => {
+      state.asyncLessons.push(...payload.lessons)
+    }
+  }
 });
 
 export const { increment, addLesson, removeLesson, editSchedule } = stateSlice.actions;
@@ -89,11 +127,13 @@ export const incrementAsync = amount => dispatch => {
   }, 1000);
 };
 
+
+
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 export const selectUser = state => state.state.user;
-export const selectLessons = state => state.state.lessonsList;
+export const selectLessons = state => state.state.asyncLessons.length !== 0 ? state.state.asyncLessons : state.state.lessonsList;
 export const selectTableValues = state => state.state.tableValues;
 export const selectSelectedLessons = state => state.state.selectedLessons;
 export default stateSlice.reducer;

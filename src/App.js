@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MainView from './components/mainView';
 import Sidebar from './components/sidebar';
 import './App.css';
+import {
+  getLessonsAsync
+} from 'features/counter/counterSlice';
+import { useDispatch } from 'react-redux';
 
 function App() {
+  const dispatch = useDispatch()
+  useEffect(() => { dispatch(getLessonsAsync()) });
   return (
     <div className="App container-fluid p-0" style={{ display: 'flex' }}>
       <Sidebar />
