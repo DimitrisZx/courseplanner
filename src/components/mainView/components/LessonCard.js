@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils';
 import { range, cloneDeep, isEmpty, indexOf } from 'lodash';
 
+
 const LessonCard = ({ lesson }) => {
   const [isDropdownExpanded, setIsDropdownExpanded] = useState(false);
   const { name, semester, type } = lesson;
@@ -39,7 +40,7 @@ const LessonCard = ({ lesson }) => {
           const lessonIndex = hourToUpdate.lessons.indexOf(lName);
           hourToUpdate.lessons.splice(lessonIndex, 1)
         }
-      } else {
+      } else { // not selected
         if (type === 'workshop') {
           hourToUpdate.writes += 1;
           hourToUpdate.lessons.push(lName);
@@ -51,9 +52,11 @@ const LessonCard = ({ lesson }) => {
     })
     const tableValuesPayload = { newTableValues: localTableValues }
     console.log(lesson)
+
     not(isSelected) || isEmpty(selectedLessons)
       ? dispatch(addLesson({ ...lesson }))
       : dispatch(removeLesson({ ...lesson }));
+
     dispatch(editSchedule(tableValuesPayload))
   };
 
@@ -114,3 +117,18 @@ const LessonCard = ({ lesson }) => {
 }
 
 export default LessonCard
+
+
+/* 
+  red - direct conflict, (writes > 1)
+  orange - one of its hours has conflict, (writes === 1 && writes === 2 στα γειτονικά) 
+  green - no conflict (writes === 1)
+
+  theory = light green
+  workshop = green
+
+  borders σε κάθε μάθημα
+  εργαστήρια σε ξεχωριστά κουμπιά
+
+  mock http request to get store data
+*/
