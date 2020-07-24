@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react';
 import {
-  addLesson, removeLesson, selectSelectedLessons, selectUser, selectTableValues, editSchedule
+  addLesson, removeLesson, selectSelectedLessons, selectUser, selectTableValues, editSchedule, getLessonsAsync
 } from 'features/counter/counterSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils';
@@ -8,7 +8,6 @@ import { range, cloneDeep, isEmpty, indexOf } from 'lodash';
 
 
 const LessonCard = ({ lesson }) => {
-  const [isDropdownExpanded, setIsDropdownExpanded] = useState(false);
   const { name, semester, type } = lesson;
   const dispatch = useDispatch();
   const selectedLessons = useSelector(selectSelectedLessons);
@@ -50,6 +49,7 @@ const LessonCard = ({ lesson }) => {
         }
       }
     })
+
     const tableValuesPayload = { newTableValues: localTableValues }
     console.log(lesson)
 
@@ -63,54 +63,36 @@ const LessonCard = ({ lesson }) => {
   const buttonClasses = (isSelected, lessonSemester, lessonType) => {
     const selected = not(isSelected) ? '-outline' : ''
     const semesterColor = lessonSemester === currentSemester ? 'success' : 'secondary';
-    const dropdownIfWorkshop = lessonType === 'workshop' && 'dropdown-toggle';
-    return `btn btn${selected}-${semesterColor} mr-2 ${dropdownIfWorkshop}`;
+    return `btn btn${selected}-${semesterColor} mr-2`;
   }
+
+  const constructObjectToSubmit = (lesson, hourSet, type, day) => ({
+    name: lesson.name,
+    semester: lesson.semester,
+    hours: hourSet,
+    type: type,
+    day: day.day
+  });
 
   return (
     <span className='btn-container' style={{ position: 'relative' }}>
-      <button
-        className={buttonClasses(isSelected, semester, type)}
-        onClick={lesson.type === 'theory' ? () => handleClick(lesson) : () => setIsDropdownExpanded(!isDropdownExpanded)}
-        id={`lesson-${name}-${type}`}
-        type={'button'}
-      >
-        {name}
-      </button>
-      {type === 'workshop' && isDropdownExpanded &&
-        <div
-          style={{ display: 'block', top: '35px', cursor: 'pointer' }}
-          className={'dropdown-menu'}
-          onPointerLeave={() => setIsDropdownExpanded(!isDropdownExpanded)}
-        >
-          {lesson.days.map(
-            day => {
-              const dayName = day.day;
-
-              return day.hours.map((hourSet, index) => {
-                const lessonObjectToSubmit = {
-                  name: lesson.name,
-                  semester: lesson.semester,
-                  hours: hourSet,
-                  type: 'workshop',
-                  day: day.day
-                };
-
-                return (
-                  <div
-                    key={index}
-                    className={'dropdown-item'}
-                    onClick={() => handleClick(lessonObjectToSubmit)}
-                  >
-                    {`${dayName} ${hourSet[0]}:00-${hourSet[1]}:00`}
-                  </div>
-                )
-              }
-              )
-            }
+      {type === 'workshop'
+        ? lesson.days.map(day =>
+          day.hours.map(hourSet =>
+            <button
+              onClick={() => handleClick(constructObjectToSubmit(lesson, hourSet, 'workshop', day))}
+              className={buttonClasses(isSelected, semester, type)}>
+              {name} | {day.day.slice(0, 3)} {`${day.hours[0][0]}:00-${day.hours[0][1]}:00`}
+            </button>
           )
-          }
-        </div>
+        )
+        :
+        <button
+          className={buttonClasses(isSelected, semester, type)}
+          onClick={() => handleClick(lesson)}
+          id={`lesson-${name}-${type}`}
+          type={'button'}
+        >{name}</button>
       }
     </span>
   )
