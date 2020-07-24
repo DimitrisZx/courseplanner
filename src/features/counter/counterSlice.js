@@ -25,14 +25,6 @@ export const getLessonsAsync = createAsyncThunk(
   }
 )
 
-// const fetchUserById = createAsyncThunk(
-//   'users/fetchByIdStatus',
-//   async (userId, thunkAPI) => {
-//     const response = await userAPI.fetchById(userId)
-//     return response.data
-//   }
-// )
-
 export const stateSlice = createSlice({
   name: 'state',
 

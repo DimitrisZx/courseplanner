@@ -7,6 +7,7 @@ import {
 } from 'features/counter/counterSlice';
 import { useDispatch } from 'react-redux';
 
+// App Entry Point
 function App() {
   const dispatch = useDispatch()
   useEffect(() => { dispatch(getLessonsAsync()) });

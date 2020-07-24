@@ -3,12 +3,9 @@ import useStyle from './styles';
 import { useSelector } from 'react-redux';
 import { selectUser } from 'features/counter/counterSlice';
 
-type Props = {
-  name: string,
-}
 const photolink = 'https://scontent.fath6-1.fna.fbcdn.net/v/t1.0-9/s960x960/40008512_2076065719073341_4810461597422059520_o.jpg?_nc_cat=102&_nc_sid=85a577&_nc_ohc=93Ckz8Of8poAX9gSN56&_nc_ht=scontent.fath6-1.fna&_nc_tp=7&oh=3b03f78d9c8882c5c293ea4c0b453aa6&oe=5F309F44'
 
-const Sidebar = (props: Props) => {
+const Sidebar = (props) => {
   const classes = useStyle();
   const { name, currentSemester } = useSelector(selectUser)
   return (
