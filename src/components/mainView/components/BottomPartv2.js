@@ -1,5 +1,5 @@
 import React from 'react';
-
+import useStyle from './styles';
 import { useSelector } from 'react-redux';
 import { selectSelectedLessons, selectUser, selectTableValues } from 'features/counter/counterSlice';
 import { repeatX, addExtraZero, lessonDays, firstLessonHour } from 'utils';
@@ -10,17 +10,19 @@ const lessonNamesReducer = (acc, cur, index, lessonsList) => `${acc}${cur}${shou
 const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
   const { currentSemester } = useSelector(selectUser);
   const tableValues = useSelector(selectTableValues);
+  const classes = useStyle();
+  const selectedLessons = useSelector(selectSelectedLessons);
   const filledHours = lessonsInDay.map(lesson => lesson.hours);
 
   const defineCellProperties = (tableValues, dayName, cellTime) => {
     const currentDay = tableValues.find(day => day.name === dayName)
     const currentHour = currentDay.hours.find(hour => hour.hour === cellTime);
     const { writes, lessons } = currentHour;
-    const cellProps = {
+
+    return {
       cellColor: writes === 0 ? 'light' : writes > 1 ? 'danger' : 'success',
       lessons,
-    }
-    return cellProps;
+    };
   }
 
   return (
@@ -31,10 +33,14 @@ const DayRowComponent = ({ dayName, availableHours, lessonsInDay }) => {
           const cellTime = index + firstLessonHour;
           const { cellColor, lessons } = defineCellProperties(tableValues, dayName, cellTime);
           const lessonNames = lessons.reduce(lessonNamesReducer, ``)
-          return <td className={`bg-${cellColor}`} key={index}>{lessonNames || '-'}</td>
+          const isTheory = lessonNames => selectedLessons.find(lesson => lesson.name === lessonNames[0])
+          const { type } = isTheory(lessons) || ''
+          console.log(type)
+          // const lessonlesson && console.log(isTheory(lessons).type)
+          return <td className={`bg-${cellColor} ${type === 'theory' && classes.theoryColor} border`} key={index}>{lessonNames || '-'}</td>
         })
       }
-    </tr>
+    </tr >
   )
 
 
