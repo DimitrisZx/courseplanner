@@ -4,17 +4,17 @@ import {
 } from 'features/counter/counterSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils';
-import { range, cloneDeep, isEmpty, indexOf } from 'lodash';
+import { range, cloneDeep, isEmpty } from 'lodash';
 
 
 const LessonCard = ({ lesson }) => {
   const { name, semester, type } = lesson;
-  const dispatch = useDispatch();
   const selectedLessons = useSelector(selectSelectedLessons);
   const { currentSemester } = useSelector(selectUser);
   const tableValues = useSelector(selectTableValues)
-  const isSelected = selectedLessons.some(lesson => lesson.name === name);
+  const dispatch = useDispatch();
 
+  const isSelected = selectedLessons.some(lesson => lesson.name === name);
 
   const handleClick = lesson => {
     const { hours: lessonHours, day: lessonDay, name: lName, type } = lesson;
@@ -51,7 +51,6 @@ const LessonCard = ({ lesson }) => {
     })
 
     const tableValuesPayload = { newTableValues: localTableValues }
-    console.log(lesson)
 
     not(isSelected) || isEmpty(selectedLessons)
       ? dispatch(addLesson({ ...lesson }))
@@ -60,7 +59,8 @@ const LessonCard = ({ lesson }) => {
     dispatch(editSchedule(tableValuesPayload))
   };
 
-  const buttonClasses = (isSelected, lessonSemester, lessonType) => {
+  // Generate the relevant style classes for each button
+  const buttonClasses = (isSelected, lessonSemester) => {
     const selected = not(isSelected) ? '-outline' : ''
     const semesterColor = lessonSemester === currentSemester ? 'success' : 'secondary';
     return `btn btn${selected}-${semesterColor} mr-2`;
@@ -78,8 +78,9 @@ const LessonCard = ({ lesson }) => {
     <span className='btn-container' style={{ position: 'relative' }}>
       {type === 'workshop'
         ? lesson.days.map(day =>
-          day.hours.map(hourSet =>
+          day.hours.map((hourSet, idx) =>
             <button
+              key={idx}
               onClick={() => handleClick(constructObjectToSubmit(lesson, hourSet, 'workshop', day))}
               className={buttonClasses(isSelected, semester, type)}>
               {name} | {day.day.slice(0, 3)} {`${day.hours[0][0]}:00-${day.hours[0][1]}:00`}
@@ -101,16 +102,16 @@ const LessonCard = ({ lesson }) => {
 export default LessonCard
 
 
-/* 
+/*
   red - direct conflict, (writes > 1)
-  orange - one of its hours has conflict, (writes === 1 && writes === 2 στα γειτονικά) 
+  orange - one of its hours has conflict, (writes === 1 && writes === 2 στα γειτονικά)
   green - no conflict (writes === 1)
 
   theory = light green
   workshop = green
 
-  borders σε κάθε μάθημα
-  εργαστήρια σε ξεχωριστά κουμπιά
+  OK borders σε κάθε μάθημα
+  OK εργαστήρια σε ξεχωριστά κουμπιά
 
-  mock http request to get store data
+  OK mock http request to get store data
 */

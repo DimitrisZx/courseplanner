@@ -1,27 +1,66 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { genDaysTable } from 'utils';
 
-
-
-const url = 'http://localhost:5000/lessons';
-const headers = {
-  method: 'GET', // *GET, POST, PUT, DELETE, etc.
+const baseUrl = 'http://localhost:5000/';
+const headers = (method, data = {}) => ({
+  method, // *GET, POST, PUT, DELETE, etc.
   mode: 'cors', // no-cors, *cors, same-origin
   cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
   credentials: 'same-origin', // include, *same-origin, omit
   headers: {
-    'Content-Type': 'application/json'
-    // 'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:5000',
+    'Access-Control-Allow-Credentials': 'true'
   },
   redirect: 'follow', // manual, *follow, error
   referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-}
+  body: JSON.stringify(data),
+});
+
 export const getLessonsAsync = createAsyncThunk(
   'app/fetchLessons',
   async (_, thunkAPI) => {
-    const response = await fetch(url);
+    const URL = baseUrl + 'lessons';
+    const response = await fetch(URL);
     const parsed = await response.json();
     return parsed;
+  }
+)
+
+export const requestLogin = createAsyncThunk(
+  'app/requestLogin',
+  async (payload, thunkAPI) => {
+    const { email, password, history } = payload;
+    const URL = baseUrl + 'requestLogin';
+    const response = await fetch(URL, headers('POST',  {email, password}));
+    const parsed = await response.json();
+    if (parsed.success) {
+      history.push('/my-schedule')
+    } else {
+      console.log(parsed.errorMsg)
+    }
+  }
+)
+
+export const requestSignUp = createAsyncThunk(
+  'app/requestSignUp',
+  async (payload, thunkAPI) => {
+    const { email, password } = payload;
+    const URL = baseUrl + 'requestSignUp';
+    const response = await fetch(URL, headers('POST',  {email, password}));
+    const parsed = await response.json();
+    console.log(parsed)
+  }
+)
+
+
+export const updateLessonsAsync = createAsyncThunk(
+  'app/updateLessonsAsync',
+  async (_, thunkAPI) => {
+    console.log(1)
+    const URL = baseUrl + 'updateSelectedLessons';
+    const response = await fetch(URL, { ...headers('POST', { msg: 'yo' }) });
+    console.log(response)
   }
 )
 
@@ -29,6 +68,7 @@ export const stateSlice = createSlice({
   name: 'state',
 
   initialState: {
+    loggedIn: false,
     user: {
       currentSemester: '5',
       name: 'Dimitris Zarachanis',
@@ -103,7 +143,10 @@ export const stateSlice = createSlice({
   extraReducers: {
     [getLessonsAsync.fulfilled]: (state, { payload }) => {
       state.asyncLessons.push(...payload.lessons)
-    }
+    },
+    [requestLogin.fulfilled]: (state, { payload }) => {
+      state.loggedIn = payload
+    },
   }
 });
 
