@@ -6,28 +6,37 @@ import {
 import MainView from './components/mainView';
 import Sidebar from './components/sidebar';
 import './App.css';
-import LoginForm from './components/loginForm'
+import LoginForm from './components/loginForm';
+import TopBar from './components/topBar'
+import EditProfileForm from './components/editProfileForm';
 import {
   getLessonsAsync,
-} from 'features/counter/counterSlice';
+} from 'features/store/stateSlice';
 import { useDispatch } from 'react-redux';
+import PrivateRoute from './privateRoute'
 
 // App Entry Point
 function App() {
   const dispatch = useDispatch()
   useEffect(() => { dispatch(getLessonsAsync()) });
   return (
-    <div className="App container-fluid p-0" style={{ display: 'flex' }}>
-      <Router>
-        <Route exact path='/auth'>
-          <LoginForm />
-        </Route>
-        <Route exact path='/my-schedule'>
-          <Sidebar />
-          <MainView name={[1, 2, 3]} />
-        </Route>
-      </Router>
-    </div>
+    <Router>
+      <div className="App container-fluid p-0" style={{ display: 'flex', flexDirection: 'column' }}>
+        <TopBar />
+        <div style={{display: 'flex'}}>
+          <Route exact path='/auth'>
+            <LoginForm />
+          </Route>
+          <Route exact path='/edit-profile'>
+            <EditProfileForm />
+          </Route>
+          <PrivateRoute exact path='/my-schedule'>
+            <Sidebar />
+            <MainView />
+          </PrivateRoute>
+        </div>
+      </div>
+    </Router>
   );
 }
 

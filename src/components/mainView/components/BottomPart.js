@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useSelector } from 'react-redux';
-import { selectSelectedLessons, selectUser, selectTableValues } from 'features/counter/counterSlice';
+import { selectSelectedLessons, selectUser, selectTableValues } from 'features/store/stateSlice';
 import { repeatX, addExtraZero, lessonDays } from 'utils';
 import { groupBy } from 'lodash'
 

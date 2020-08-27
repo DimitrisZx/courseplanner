@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { selectLessons, selectUser } from 'features/counter/counterSlice';
+import { selectLessons, selectUser } from 'features/store/stateSlice';
 import LessonCard from '../LessonCard';
 import useStyle from './styles';
 

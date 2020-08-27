@@ -11,6 +11,18 @@ function repeatX(times) {
   return timesArr;
 }
 
+const validators = {
+  name: (n) => {
+    const regex = /^\p{Lu}\p{Ll}+( \p{Lu}\p{Ll}+)*$/;
+    console.log(regex.test(n))
+    console.log(n)
+  },
+  rn: () => {},
+  semester: () => {},
+  email: () => {},
+  password: () => {},
+}
+
 // add extra zero to beginning of time string e.g. 8:00 => 08:00
 const addExtraZero = num => num < 10 ? '0' : '';
 
@@ -28,5 +40,6 @@ export {
   addExtraZero,
   genDaysTable,
   lessonDays,
-  firstLessonHour
+  firstLessonHour,
+  validators,
 };

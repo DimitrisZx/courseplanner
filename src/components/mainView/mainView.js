@@ -4,7 +4,7 @@ import { TopPart, BottomPartv2 } from './components';
 import {
   getLessonsAsync,
   updateLessonsAsync,
-} from 'features/counter/counterSlice';
+} from 'features/store/stateSlice';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 const MainView = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   addLesson, removeLesson, selectSelectedLessons, selectUser, selectTableValues, editSchedule, getLessonsAsync
-} from 'features/counter/counterSlice';
+} from 'features/store/stateSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils';
 import { range, cloneDeep, isEmpty } from 'lodash';
@@ -27,7 +27,6 @@ const LessonCard = ({ lesson }) => {
       if (isSelected) {
         if (type === 'workshop') {
           const hoursThatHadThisWorkshop = localTableValues.map(day => day.hours.filter(hour => hour.lessons.includes(lName))).flat();
-          console.log(hoursThatHadThisWorkshop)
           hoursThatHadThisWorkshop.forEach(hour => {
             hour.writes -= 1;
             const lessonIndex = hour.lessons.indexOf(lName);

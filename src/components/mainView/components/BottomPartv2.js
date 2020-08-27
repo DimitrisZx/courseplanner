@@ -1,7 +1,7 @@
 import React from 'react';
 import useStyle from './styles';
 import { useSelector } from 'react-redux';
-import { selectSelectedLessons, selectTableValues } from 'features/counter/counterSlice';
+import { selectSelectedLessons, selectTableValues } from 'features/store/stateSlice';
 import { repeatX, addExtraZero, lessonDays, firstLessonHour } from 'utils';
 
 const shouldAddComma = (index, array) => index !== array.length - 1 ? ', ' : '';

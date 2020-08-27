@@ -27,6 +27,23 @@ export const getLessonsAsync = createAsyncThunk(
   }
 )
 
+export const requestSignUp = createAsyncThunk(
+  'app/requestSignUp',
+  async (payload, thunkAPI) => {
+    const { email, password, history } = payload;
+    const URL = baseUrl + 'requestSignUp';
+    const response = await fetch(URL, headers('POST',  {email, password}));
+    const parsed = await response.json();
+    if (parsed.success) {
+      history.push('/edit-profile')
+    } else {
+      console.log(parsed.errorMsg)
+    }
+    console.log(parsed)
+    return parsed;
+  }
+)
+
 export const requestLogin = createAsyncThunk(
   'app/requestLogin',
   async (payload, thunkAPI) => {
@@ -39,28 +56,31 @@ export const requestLogin = createAsyncThunk(
     } else {
       console.log(parsed.errorMsg)
     }
+    return parsed
   }
 )
-
-export const requestSignUp = createAsyncThunk(
-  'app/requestSignUp',
+export const requestProfileEdit = createAsyncThunk(
+  'app/requestProfileEdit',
   async (payload, thunkAPI) => {
-    const { email, password } = payload;
-    const URL = baseUrl + 'requestSignUp';
-    const response = await fetch(URL, headers('POST',  {email, password}));
+    const {name, rn, semester, localId} = payload;
+    console.log(localId)
+    const URL = baseUrl + 'requestProfileEdit';
+    const response = await fetch(URL, {...headers('POST', {name, rn, semester, localId})})
     const parsed = await response.json();
-    console.log(parsed)
+    if (parsed.success) {
+      // history.push('/my-schedule')
+    } else {
+      console.log(parsed.errorMsg)
+    }
+    return parsed
   }
-)
-
+);
 
 export const updateLessonsAsync = createAsyncThunk(
   'app/updateLessonsAsync',
   async (_, thunkAPI) => {
-    console.log(1)
     const URL = baseUrl + 'updateSelectedLessons';
     const response = await fetch(URL, { ...headers('POST', { msg: 'yo' }) });
-    console.log(response)
   }
 )
 
@@ -70,9 +90,12 @@ export const stateSlice = createSlice({
   initialState: {
     loggedIn: false,
     user: {
+      localId: '',
       currentSemester: '5',
       name: 'Dimitris Zarachanis',
       AM: '14024',
+      sessionExpiresIn: 0,
+      email: 'dimitriszarahanis@gmail.com'
     },
     selectedLessons: [],
     tableValues: genDaysTable(5, 13),
@@ -138,19 +161,42 @@ export const stateSlice = createSlice({
     },
     editSchedule: (state, payload) => {
       state.tableValues = payload.payload.newTableValues;
-    }
+    },
+    loginSuccess: (state, payload) => {
+      console.log(payload)
+      state.sessionExpiresIn = payload.sessionExpiresIn;
+      state.email = payload.email;
+    },
+    logout: state => {
+      state.loggedIn = false;
+      state.user = {
+        currentSemester: '0',
+        name: '',
+        AM: '',
+        sessionExpiresIn: 0,
+        email: ''
+      };
+    },
   },
   extraReducers: {
     [getLessonsAsync.fulfilled]: (state, { payload }) => {
       state.asyncLessons.push(...payload.lessons)
     },
     [requestLogin.fulfilled]: (state, { payload }) => {
-      state.loggedIn = payload
+      console.log(payload)
+      const { email, expiresIn, localId } = payload.payload;
+      state.loggedIn = true;
+      state.user.email = email;
+      state.user.sessionExpiresIn = expiresIn;
+      state.user.localId = localId;
+    },
+    [requestSignUp.fulfilled]: (state, { payload }) => {
+      state.user.localId = payload.payload.localId;
     },
   }
 });
 
-export const { increment, addLesson, removeLesson, editSchedule } = stateSlice.actions;
+export const { increment, addLesson, removeLesson, editSchedule, loginSuccess, logout } = stateSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -171,4 +217,6 @@ export const selectUser = state => state.state.user;
 export const selectLessons = state => state.state.asyncLessons.length !== 0 ? state.state.asyncLessons : state.state.lessonsList;
 export const selectTableValues = state => state.state.tableValues;
 export const selectSelectedLessons = state => state.state.selectedLessons;
+export const selectIsLoggedIn = state => state.state.loggedIn;
+export const selectLocalId = state => state.state.user.localId;
 export default stateSlice.reducer;
