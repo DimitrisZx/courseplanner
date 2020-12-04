@@ -17,6 +17,19 @@ const headers = (method, data = {}) => ({
   body: JSON.stringify(data),
 });
 
+export const updateSchedule = createAsyncThunk(
+  'app/updateSchedule',
+  async (payload, thunkAPI) => {
+    const URL = baseUrl + 'updateSchedule';
+    // const { lessonSchedule } = payload;
+    console.log(payload)
+    const {userId, selectedLessons} = payload;
+    const response = await fetch(URL, headers('POST',  payload));
+    const parsed = await response.json();
+    return parsed;
+  }
+)
+
 export const getLessonsAsync = createAsyncThunk(
   'app/fetchLessons',
   async (_, thunkAPI) => {
@@ -30,12 +43,12 @@ export const getLessonsAsync = createAsyncThunk(
 export const requestSignUp = createAsyncThunk(
   'app/requestSignUp',
   async (payload, thunkAPI) => {
-    const { email, password, history } = payload;
+    const { email, password, name, registryNumber, semester, history } = payload;
     const URL = baseUrl + 'requestSignUp';
-    const response = await fetch(URL, headers('POST',  {email, password}));
+    const response = await fetch(URL, headers('POST', {email, password, name, registryNumber, semester}));
     const parsed = await response.json();
     if (parsed.success) {
-      history.push('/edit-profile')
+      history.push('/my-schedule')
     } else {
       console.log(parsed.errorMsg)
     }
@@ -59,6 +72,15 @@ export const requestLogin = createAsyncThunk(
     return parsed
   }
 )
+
+export const getSavedSelectedLessons = createAsyncThunk(
+  'app/getSavedSelectedLessons',
+  async (payload, thunkAPI) => {
+    const { rn } = payload;
+    const URL = baseUrl + 'getSavedSelectedLessons';
+    const response = await fetch(URL, {...headers('POST', {rn})})
+  }
+);
 export const requestProfileEdit = createAsyncThunk(
   'app/requestProfileEdit',
   async (payload, thunkAPI) => {
@@ -76,13 +98,13 @@ export const requestProfileEdit = createAsyncThunk(
   }
 );
 
-export const updateLessonsAsync = createAsyncThunk(
-  'app/updateLessonsAsync',
-  async (_, thunkAPI) => {
-    const URL = baseUrl + 'updateSelectedLessons';
-    const response = await fetch(URL, { ...headers('POST', { msg: 'yo' }) });
-  }
-)
+// export const updateLessonsAsync = createAsyncThunk(
+//   'app/updateLessonsAsync',
+//   async (_, thunkAPI) => {
+//     const URL = baseUrl + 'updateSelectedLessons';
+//     const response = await fetch(URL, { ...headers('POST', { msg: 'yo' }) });
+//   }
+// )
 
 export const stateSlice = createSlice({
   name: 'state',
@@ -91,68 +113,18 @@ export const stateSlice = createSlice({
     loggedIn: false,
     user: {
       localId: '',
-      currentSemester: '5',
-      name: 'Dimitris Zarachanis',
-      AM: '14024',
+      currentSemester: '',
+      name: ' ',
+      registryNumber: '',
       sessionExpiresIn: 0,
-      email: 'dimitriszarahanis@gmail.com'
+      email: ''
     },
     selectedLessons: [],
     tableValues: genDaysTable(5, 13),
     asyncLessons: [],
-    lessonsList:
-      [
-        {
-          name: 'Προτυπα-Θ',
-          day: 'Δευτέρα',
-          hours: [15, 17],
-          semester: '3',
-          type: 'theory'
-        },
-        {
-          name: 'Προτυπα-Ε',
-          semester: '3',
-          type: 'workshop',
-          days: [
-            { day: 'Δευτέρα', hours: [[8, 10]] },
-            { day: 'Τρίτη', hours: [[14, 16]] },
-            { day: 'Τετάρτη', hours: [[18, 20]] },
-          ],
-        },
-        {
-          name: 'Βιβλιοθήκες-Θ',
-          day: 'Δευτέρα',
-          hours: [17, 18],
-          semester: '3',
-          type: 'theory'
-        },
-        {
-          name: 'Κώδικες-Θ',
-          day: 'Δευτέρα',
-          hours: [15, 17],
-          semester: '5',
-          type: 'theory'
-        },
-        {
-          name: 'Κώδικες-Ε',
-          semester: '5',
-          type: 'workshop',
-          days: [
-            { day: 'Δευτέρα', hours: [[8, 11], [12, 14]] },
-            { day: 'Τρίτη', hours: [[14, 16]] },
-            { day: 'Τετάρτη', hours: [[18, 20]] },
-          ],
-        },
-      ]
+
   },
   reducers: {
-    increment: state => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1;
-    },
     addLesson: (state, lesson) => {
       state.selectedLessons.push(lesson.payload);
     },
@@ -177,26 +149,41 @@ export const stateSlice = createSlice({
         email: ''
       };
     },
+    clearLocalSchedule: state => {
+      state.selectedLessons = []
+    }
   },
   extraReducers: {
     [getLessonsAsync.fulfilled]: (state, { payload }) => {
-      state.asyncLessons.push(...payload.lessons)
+      state.asyncLessons = [...payload.lessons]
     },
     [requestLogin.fulfilled]: (state, { payload }) => {
-      console.log(payload)
       const { email, expiresIn, localId } = payload.payload;
       state.loggedIn = true;
       state.user.email = email;
       state.user.sessionExpiresIn = expiresIn;
       state.user.localId = localId;
+      state.user.name = payload.payload.name;
+      state.user.currentSemester = payload.payload.semester;
+      state.user.registryNumber = payload.payload.registryNumber;
+      console.log(payload.payload)
+      state.selectedLessons = [...payload.payload.selectedLessons];
     },
     [requestSignUp.fulfilled]: (state, { payload }) => {
       state.user.localId = payload.payload.localId;
+      state.loggedIn = true;
+      state.user.email = payload.payload.email;
+      state.user.name = payload.payload.name;
+      state.user.currentSemester = payload.payload.semester;
+      state.user.registryNumber = payload.payload.registryNumber;
     },
+    [getSavedSelectedLessons]: (state, { payload }) => {
+      state.selectedLessons = payload.payload.selectedLessons;
+    }
   }
 });
 
-export const { increment, addLesson, removeLesson, editSchedule, loginSuccess, logout } = stateSlice.actions;
+export const { increment, addLesson, removeLesson, editSchedule, loginSuccess, logout, clearLocalSchedule } = stateSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -208,13 +195,8 @@ export const incrementAsync = amount => dispatch => {
   }, 1000);
 };
 
-
-
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state) => state.counter.value)`
 export const selectUser = state => state.state.user;
-export const selectLessons = state => state.state.asyncLessons.length !== 0 ? state.state.asyncLessons : state.state.lessonsList;
+export const selectLessons = state => state.state.asyncLessons;
 export const selectTableValues = state => state.state.tableValues;
 export const selectSelectedLessons = state => state.state.selectedLessons;
 export const selectIsLoggedIn = state => state.state.loggedIn;

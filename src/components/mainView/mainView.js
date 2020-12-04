@@ -1,28 +1,42 @@
 import React, { useEffect } from 'react';
 import useStyle from './styles';
-import { TopPart, BottomPartv2 } from './components';
+import { TopPart, BottomPartv3 } from './components';
 import {
   getLessonsAsync,
-  updateLessonsAsync,
+  updateSchedule,
+  selectSelectedLessons,
+  selectUser,
+  clearLocalSchedule
 } from 'features/store/stateSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 const MainView = () => {
   const classes = useStyle();
   const dispatch = useDispatch();
   const history = useHistory();
-  useEffect(() => { dispatch(getLessonsAsync()) });
+  const selectedlessons = useSelector(selectSelectedLessons);
+  const user = useSelector(selectUser)
+  useEffect(() => { dispatch(getLessonsAsync()) },[]);
 
   const handleSaveSchedule = () => {
-    dispatch(updateLessonsAsync())
+    const payload = {userId: user.registryNumber, selectedlessons}
+    dispatch(updateSchedule(payload))
     history.push('/auth')
+  }
+
+  const handleClearSchedule = () => {
+    dispatch(updateSchedule({userId: user.registryNumber, selectedlessons:[]}))
+    dispatch(clearLocalSchedule())
   }
 
   return (
     <div className={classes.mainView}>
       <TopPart />
-      <BottomPartv2 />
-      <button className={'btn btn-success'} onClick={handleSaveSchedule}>Save Schedule</button>
+      <BottomPartv3 />
+      <div className="buttons">
+        <button className={'btn btn-success'} onClick={handleSaveSchedule}>Save Schedule</button>
+        <button className={'btn btn-danger'} onClick={handleClearSchedule}>Clear Schedule</button>
+      </div>
     </div>
   )
 }

@@ -27,7 +27,7 @@ const validators = {
 const addExtraZero = num => num < 10 ? '0' : '';
 
 const day = (name, range) => {
-  const hours = range => _range(range[0], range[1]).map(num => ({ hour: num, writes: 0, lessons: [] }))
+  const hours = hourRange => _range(hourRange[0], hourRange[1]).map(num => ({ hour: num, writes: 0, lessons: [] }))
   return { name, hours: hours(range) };
 }
 

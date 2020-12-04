@@ -30,9 +30,12 @@ export default function TopBar() {
           <li className="nav-item active">
             <Link className="nav-link" href="#" to='/my-schedule' >Home <span className="sr-only">(current)</span></Link>
           </li>
-          {isLoggedIn && <li className="nav-item">
-            <Link className="nav-link" to="/edit-profile">Settings</Link>
-          </li>}
+          {isLoggedIn && 
+            <>
+              <li className="nav-item"><Link className="nav-link" to="/edit-profile">Settings</Link></li>
+              <li className="nav-item"><Link className="nav-link" to="/edit-selected-lessons">Επιλεγμένα Μαθήματα</Link></li>
+            </>
+          }
         </ul>
       </div>
       {isLoggedIn && <div className="my-2 my-lg-0">

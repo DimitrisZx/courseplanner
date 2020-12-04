@@ -11,7 +11,7 @@ const Sidebar = (props) => {
   return (
     <div className={`${classes.sidebar} card`}>
       <div className={`${classes.sidebarContent} card-body`}>
-        <img src={photolink} alt="" width='100' height='100' className={'bg-secondary rounded-circle'} />
+        {/* <img src={photolink} alt="" width='100' height='100' className={'bg-secondary rounded-circle'} /> */}
         <h5 className="card-title">{name}</h5>
         <div className="card-text">{'Εξάμηνο: '}{currentSemester}</div>
         <h6 className="card-subtitle">{email}</h6>

@@ -7,6 +7,9 @@ const useStyle = createUseStyles({
     //   paddingRight: '20px',
     //   borderRight: '1px solid grey',
     // }
+  },
+  caret: {
+    cursor: 'pointer'
   }
 });
 
