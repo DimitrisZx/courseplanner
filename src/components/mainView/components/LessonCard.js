@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  addLesson, removeLesson, selectSelectedLessons, selectUser, selectTableValues, editSchedule, getLessonsAsync
+  addLesson, removeLesson, selectSelectedLessons, selectUser, selectTableValues, editSchedule
 } from 'features/store/stateSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { not } from 'utils';

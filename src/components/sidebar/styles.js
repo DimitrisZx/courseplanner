@@ -4,7 +4,7 @@ const useStyle = createUseStyles({
   sidebar: {
     background: '#fff',
     width: '200px',
-    height: 'auto',
+    height: '100%',
   },
   sidebarContent: {
     display: 'flex',

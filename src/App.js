@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -10,31 +10,32 @@ import './App.css';
 import LoginForm from './components/loginForm';
 import TopBar from './components/topBar'
 import EditProfileForm from './components/editProfileForm';
+import {AdminPanel} from './components/adminPanel';
 import EditSelectedLessons from './components/editSelectedLessons';
-import {
-  getLessonsAsync,
-} from 'features/store/stateSlice';
-import { useDispatch } from 'react-redux';
 import PrivateRoute from './privateRoute'
 
 // App Entry Point
 function App() {
   return (
     <Router>
-      <div className="App container-fluid p-0" style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="App bg-light container-fluid p-0" style={{ display: 'flex', flexDirection: 'column' }}>
         <TopBar />
-        <div style={{display: 'flex'}}>
+        <div style={{display: 'flex', height: '100%'}}>
           <Route exact path="/">
-            <Redirect to="auth" />
-          </Route>
-          <Route exact path='/auth'>
+            {/* <Redirect to="auth" /> */}
             <LoginForm />
           </Route>
+          {/* <Route exact path='/auth'>
+            <LoginForm />
+          </Route> */}
           <Route exact path='/edit-profile'>
             <EditProfileForm />
           </Route>
           <PrivateRoute exact path='/edit-selected-lessons'>
             <EditSelectedLessons />
+          </PrivateRoute>
+          <PrivateRoute exact path='/admin-panel'>
+            <AdminPanel />
           </PrivateRoute>
           <PrivateRoute exact path='/my-schedule'>
             <Sidebar />

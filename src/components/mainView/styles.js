@@ -2,13 +2,13 @@ import { createUseStyles } from 'react-jss';
 
 const useStyle = createUseStyles({
   mainView: {
-    height: '100%',
-    width: '100%',
+    width: '80%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    background: '#fff',
+    // background: '#fff',
+    margin: '0 auto',
+    marginTop: '25px'
   },
   viewPart: {
     width: '100%',

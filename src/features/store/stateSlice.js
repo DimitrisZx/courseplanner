@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { genDaysTable } from 'utils';
+import axios from 'axios';
 
 const baseUrl = 'http://localhost:5000/';
 const headers = (method, data = {}) => ({
@@ -17,6 +18,19 @@ const headers = (method, data = {}) => ({
   body: JSON.stringify(data),
 });
 
+export async function uploadFile(file) {
+  const URL = baseUrl + 'uploadSchedule';
+  const formData = new FormData();
+  console.log(file)
+  formData.append("myfile", file);
+  const config = {
+    headers: {
+      'content-type': 'multipart/form-data'
+    }
+  }
+  await axios.post(URL, formData, config)
+} 
+
 export const updateSchedule = createAsyncThunk(
   'app/updateSchedule',
   async (payload, thunkAPI) => {
@@ -32,10 +46,22 @@ export const updateSchedule = createAsyncThunk(
 
 export const getLessonsAsync = createAsyncThunk(
   'app/fetchLessons',
-  async (_, thunkAPI) => {
-    const URL = baseUrl + 'lessons';
+  async (payload, thunkAPI) => {
+    // const URL = baseUrl + 'lessons?uuid="' + payload.uuid;
+    const URL = `${baseUrl}lessons?uuid=${payload.uuid}&schoolCode=${payload.schoolCode}&semester=${payload.semester}`;
     const response = await fetch(URL);
     const parsed = await response.json();
+    return parsed;
+  }
+)
+
+export const updateRegisteredLessonsAsync = createAsyncThunk(
+  'app/updateRegisteredLessons',
+  async (payload, thunkAPI) => {
+    const URL = baseUrl + 'updateRegisteredLessons';
+    const response = await fetch(URL, headers('POST', payload));
+    const parsed = await response.json()
+    console.log(parsed);
     return parsed;
   }
 )
@@ -43,9 +69,9 @@ export const getLessonsAsync = createAsyncThunk(
 export const requestSignUp = createAsyncThunk(
   'app/requestSignUp',
   async (payload, thunkAPI) => {
-    const { email, password, name, registryNumber, semester, history } = payload;
+    const { email, password, name, registryNumber, semester, history, schoolCode } = payload;
     const URL = baseUrl + 'requestSignUp';
-    const response = await fetch(URL, headers('POST', {email, password, name, registryNumber, semester}));
+    const response = await fetch(URL, headers('POST', {email, password, name, registryNumber, semester, schoolCode}));
     const parsed = await response.json();
     if (parsed.success) {
       history.push('/my-schedule')
@@ -53,6 +79,16 @@ export const requestSignUp = createAsyncThunk(
       console.log(parsed.errorMsg)
     }
     console.log(parsed)
+    return parsed;
+  }
+)
+
+export const getSchoolNames = createAsyncThunk(
+  'app/getAvailableSchools',
+  async (payload, thunkAPI) => {
+    const URL = baseUrl + 'getAvailableSchools';
+    const response = await fetch(URL, headers('POST', {}));
+    const parsed = await response.json();
     return parsed;
   }
 )
@@ -117,16 +153,26 @@ export const stateSlice = createSlice({
       name: ' ',
       registryNumber: '',
       sessionExpiresIn: 0,
-      email: ''
+      email: '',
+      isAdmin: false
     },
+    registeredLessons: [],
     selectedLessons: [],
     tableValues: genDaysTable(5, 13),
     asyncLessons: [],
-
+    lessonNames: [],
+    filesToUpload: [],
+    availableSchoolNames: [],
   },
   reducers: {
+    updateRegisteredLessons: (state, payload) => {
+      state.registeredLessons = payload.payload;
+    },
     addLesson: (state, lesson) => {
       state.selectedLessons.push(lesson.payload);
+    },
+    addFileToUpload: (state, payload) => {
+      state.filesToUpload.push(payload.payload)
     },
     removeLesson: (state, lesson) => {
       state.selectedLessons = state.selectedLessons.filter(item => item.name !== lesson.payload.name)
@@ -146,7 +192,8 @@ export const stateSlice = createSlice({
         name: '',
         AM: '',
         sessionExpiresIn: 0,
-        email: ''
+        email: '',
+        uuid: ''
       };
     },
     clearLocalSchedule: state => {
@@ -156,9 +203,10 @@ export const stateSlice = createSlice({
   extraReducers: {
     [getLessonsAsync.fulfilled]: (state, { payload }) => {
       state.asyncLessons = [...payload.lessons]
+      state.lessonNames = payload.lessonNames;
     },
     [requestLogin.fulfilled]: (state, { payload }) => {
-      const { email, expiresIn, localId } = payload.payload;
+      const { email, expiresIn, localId, userType } = payload.payload;
       state.loggedIn = true;
       state.user.email = email;
       state.user.sessionExpiresIn = expiresIn;
@@ -166,8 +214,11 @@ export const stateSlice = createSlice({
       state.user.name = payload.payload.name;
       state.user.currentSemester = payload.payload.semester;
       state.user.registryNumber = payload.payload.registryNumber;
-      console.log(payload.payload)
+      state.user.uuid = payload.payload.uuid;
       state.selectedLessons = [...payload.payload.selectedLessons];
+      state.registeredLessons = [...payload.payload.registeredLessons];
+      state.user.isAdmin = userType === 'admin';
+      state.user.schoolCode = payload.payload.schoolCode
     },
     [requestSignUp.fulfilled]: (state, { payload }) => {
       state.user.localId = payload.payload.localId;
@@ -176,14 +227,30 @@ export const stateSlice = createSlice({
       state.user.name = payload.payload.name;
       state.user.currentSemester = payload.payload.semester;
       state.user.registryNumber = payload.payload.registryNumber;
+      state.user.uuid = payload.payload.uuid;
     },
     [getSavedSelectedLessons]: (state, { payload }) => {
       state.selectedLessons = payload.payload.selectedLessons;
+    },
+    [updateRegisteredLessonsAsync.fulfilled]: (state, {payload}) => {
+      state.registeredLessons = [...payload.payload];
+    },
+    [getSchoolNames.fulfilled]: (state, {payload}) => {
+      state.availableSchoolNames = [...payload];
     }
   }
 });
 
-export const { increment, addLesson, removeLesson, editSchedule, loginSuccess, logout, clearLocalSchedule } = stateSlice.actions;
+export const {
+  addLesson,
+  removeLesson,
+  editSchedule,
+  loginSuccess,
+  logout,
+  clearLocalSchedule,
+  updateRegisteredLessons,
+  addFileToUpload,
+} = stateSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -199,6 +266,12 @@ export const selectUser = state => state.state.user;
 export const selectLessons = state => state.state.asyncLessons;
 export const selectTableValues = state => state.state.tableValues;
 export const selectSelectedLessons = state => state.state.selectedLessons;
+export const selectRegisteredLessons = state => state.state.registeredLessons;
 export const selectIsLoggedIn = state => state.state.loggedIn;
+export const selectIsAdmin = state => state.state.user.isAdmin;
 export const selectLocalId = state => state.state.user.localId;
+export const selectLessonNames = state => state.state.lessonNames;
+export const selectFilesToUpload = state => state.state.filesToUpload;
+export const selectAvailableSchoolNames = state => state.state.availableSchoolNames;
+export const selectSchoolCode = state => state.state.user.schoolCode;
 export default stateSlice.reducer;
