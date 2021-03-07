@@ -11,7 +11,7 @@ const PrivateRoute = ({ children, ...rest }) => {
       render={(props) => (
       isLoggedIn
         ? children
-        : <Redirect to='/my-schedule' />
+        : <Redirect to='/' />
     )} />
   )
 }

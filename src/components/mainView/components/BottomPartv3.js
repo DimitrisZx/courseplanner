@@ -35,7 +35,7 @@ const DayRowComponent = ({ dayName, availableHours }) => {
 
   return (
     <tr className="bg-white">
-      <th scope='row'>{dayName}</th>
+      <th scope='row' className="tside-header">{dayName}</th>
       {
         dayHours.map((dayHour, idx) => {
           const lessonNames = dayHour.lessonsInHour.reduce(lessonNamesReducer, ``);
@@ -50,7 +50,7 @@ const DayRowComponent = ({ dayName, availableHours }) => {
 
 const genHours = times => {
   const arrayToReturn = repeatX(times).map((_, index) =>
-    <th key={index} scope={'col'}>{`${addExtraZero((index + 8))}${index + 8}:00`}</th>)
+    <th className={'theader bg-white border-bottom'} key={index} scope={'col'}>{`${addExtraZero((index + 8))}${index + 8}:00`}</th>)
   return arrayToReturn;
 }
 
@@ -58,10 +58,11 @@ export function BottomPartv3() {
   const selectedLessons = useSelector(selectSelectedLessons);
 
   return (
+    <div class="table-responsive">
     <table className="table mt-3 border shadow-sm">
       <thead className="border bg-white rounded">
         <tr className="">
-          <th scope="col">{''}</th>
+          <th scope="col" className="theader border-bottom">{''}</th>
           {genHours(14)}
         </tr>
       </thead>
@@ -80,6 +81,7 @@ export function BottomPartv3() {
         }
       </tbody>
     </table>
+    </div>
   )
 }
 

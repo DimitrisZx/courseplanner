@@ -2,7 +2,6 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Redirect
 } from "react-router-dom";
 import MainView from './components/mainView';
 import Sidebar from './components/sidebar';
@@ -16,18 +15,15 @@ import PrivateRoute from './privateRoute'
 
 // App Entry Point
 function App() {
+  const isMobile = window.matchMedia('(max-width: 450px)').matches;
   return (
     <Router>
       <div className="App bg-light container-fluid p-0" style={{ display: 'flex', flexDirection: 'column' }}>
         <TopBar />
         <div style={{display: 'flex', height: '100%'}}>
           <Route exact path="/">
-            {/* <Redirect to="auth" /> */}
             <LoginForm />
           </Route>
-          {/* <Route exact path='/auth'>
-            <LoginForm />
-          </Route> */}
           <Route exact path='/edit-profile'>
             <EditProfileForm />
           </Route>
@@ -38,7 +34,7 @@ function App() {
             <AdminPanel />
           </PrivateRoute>
           <PrivateRoute exact path='/my-schedule'>
-            <Sidebar />
+            {!isMobile && <Sidebar />}
             <MainView />
           </PrivateRoute>
         </div>

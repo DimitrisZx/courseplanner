@@ -6,3 +6,13 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.theader {
+  position: sticky;
+  top: 0;
+}
+.tside-header {
+  position: sticky;
+  left: 0;
+  background-color: white;
+}

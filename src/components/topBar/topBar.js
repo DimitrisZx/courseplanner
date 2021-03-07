@@ -1,5 +1,4 @@
 import React from 'react';
-// import useStyle from './styles';
 import { useHistory, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout, selectIsLoggedIn, selectIsAdmin } from '../../features/store/stateSlice';
@@ -12,13 +11,9 @@ export default function TopBar() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const isAdmin = useSelector(selectIsAdmin);
 
-  const handleNav = path => {
-    history.push(path)
-  }
-
   const handleLogout = () => {
-    dispatch(logout())
-    history.push('auth')
+    dispatch(logout());
+    history.push('/');
   }
 
   return (

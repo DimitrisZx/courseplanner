@@ -18,11 +18,10 @@ const MainView = () => {
   const selectedlessons = useSelector(selectSelectedLessons);
   const user = useSelector(selectUser)
   useEffect(() => { dispatch(getLessonsAsync({uuid: user.uuid, semester: 'springSemester', schoolCode: user.schoolCode})) }, []);
-
+  const isMobile = window.matchMedia('(max-width: 450px)').matches;
   const handleSaveSchedule = () => {
     const payload = {userId: user.registryNumber, selectedlessons}
     dispatch(updateSchedule(payload))
-    // history.push('/auth')
   }
 
   const handleClearSchedule = () => {
@@ -32,11 +31,11 @@ const MainView = () => {
 
   return (
     <div className={classes.mainView}>
-      <TopPart />
+      {!isMobile && <TopPart />}
       <BottomPartv3 />
       <div className="buttons d-flex justify-content-end">
-        <button className={'btn btn-primary shadow-sm'} onClick={handleSaveSchedule}>Save Schedule</button>
-        <button className={'btn btn-danger ml-2 shadow-sm'} onClick={handleClearSchedule}>Clear Schedule</button>
+        <button className={'btn btn-primary shadow-sm'} onClick={handleSaveSchedule}>Αποθήκευση</button>
+        <button className={'btn btn-danger ml-2 shadow-sm'} onClick={handleClearSchedule}>Καθαρισμός</button>
       </div>
     </div>
   )

@@ -34,8 +34,8 @@ export default function EditSelectedLessons() {
   return (
     <div className='container '>
       <div className="row d-flex justify-content-center">
-        <div className="col-md-6 bg-white pd-5">
-          <form>
+        <div className="col-md-12 mt-3 bg-white">
+          <form className="p-4">
             <h3>{"Διαθέσιμα Μαθήματα"}</h3>
             <hr/>
             {lessonsNames.map((lessonName, index) => {
@@ -54,7 +54,6 @@ export default function EditSelectedLessons() {
               </div>)
             })}
           </form>
-          <hr/>
           <div className="justify-content-center">
             <button
               className="btn btn-primary mr-1"
