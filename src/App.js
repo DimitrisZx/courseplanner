@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -11,7 +11,7 @@ import TopBar from './components/topBar'
 import EditProfileForm from './components/editProfileForm';
 import {AdminPanel} from './components/adminPanel';
 import EditSelectedLessons from './components/editSelectedLessons';
-import PrivateRoute from './privateRoute'
+import PrivateRoute from './privateRoute';
 
 // App Entry Point
 function App() {

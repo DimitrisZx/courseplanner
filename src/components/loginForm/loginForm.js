@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { requestLogin, requestSignUp, selectIsLoggedIn, selectAvailableSchoolNames, getSchoolNames } from '../../features/store/stateSlice'
+import { requestLogin, requestSignUp, selectIsLoggedIn, selectAvailableSchoolNames, getSchoolNames, selectErrors, clearErrors } from '../../features/store/stateSlice'
 import fields from './formFields';
 import { useHistory } from 'react-router-dom';
 import Dropdown from './dropdown';
+import { useNetwork } from '../../useNetwork';
 
 const LoginForm = () => {
   const history = useHistory();
@@ -19,6 +20,10 @@ const LoginForm = () => {
   const userLoggedIn = useSelector(selectIsLoggedIn);
   const schoolsMap = useSelector(selectAvailableSchoolNames)
   const schoolNames = schoolsMap.map(obj => obj.schoolName);
+  const errors = useSelector(selectErrors);
+
+  const isOffline = !useNetwork();
+  console.log(isOffline)
 
   if (userLoggedIn) history.push("/my-schedule");
   // dispatch(requestLogin({ email: 'myemail@eg.gr', password: '1234', history, registryNumber: '14024' }))
@@ -60,9 +65,13 @@ const LoginForm = () => {
         break;
     }
   }
-
+  function handleClear(e) {
+    e.preventDefault();
+    dispatch(clearErrors())
+  }
   function handleSetLogin(e, bool) {
     e.preventDefault();
+    handleClear(e);
     isLogin
      ? [ setEmail, setPassword ].forEach(fn => fn(''))
      : [ setEmail, setPassword, setName, setRn, setSemester ].forEach(fn => fn(""))
@@ -88,12 +97,13 @@ const LoginForm = () => {
       <div className="row d-flex justify-content-center mt-5">
         <div className={`col-md-6 bg-white shadow-sm border border-${mainButtonColor} pt-2 pb-3 rounded`}>
           <form>
-            <h3 className="text-dark">{isLogin ? 'Είσοδος' : 'Εγγραφή'}</h3>
+            <h3 className="text-dark">{isLogin ? 'Είσοδος' : 'Εγγραφή'}{isOffline && ' - Είστε εκτός σύνδεσης'}</h3>
             <hr></hr>
             {fields.filter(filterLoginFields).map(({ name, type, label, value }) =>
               <div className="form-group" key={name}>
                 <label htmlFor={name}>{label}</label>
                 <input
+                  disabled={isOffline}
                   onChange={handleChange}
                   value={fieldStates[name]}
                   className="form-control"
@@ -103,25 +113,32 @@ const LoginForm = () => {
               </div>
             )}
             {!isLogin && <Dropdown namesList={schoolNames} label={"Επιλογή Σχολής"} setterFunction={mapSchooNameToCode} /> }
-            <div className="buttons d-flex justify-content-end">
+            <div className="buttons d-flex justify-content-end mt-3">
               <button  
-                id={isLogin ? 'login' : 'sign-Up'} 
+                id={ isOffline && isLogin ? 'login' : 'sign-Up'} 
                 disabled={
+                  !isOffline &&
                   isLogin
                     ? userNamePasswordFilled
                     : allFieldsFilled
                 } 
                 onClick={handleClick} 
                 className={
-                  `btn btn-${mainButtonColor} cursor-pointer`}>{isLogin ? 'Login' : 'Sign Up'}
+                  `btn btn-${mainButtonColor} cursor-pointer`}>{isLogin ? 'Σύνδεση' : 'Εγγραφή'}
               </button>
                 <button
                   className="btn btn-warning ml-2" 
-                  onClick={(e) => handleSetLogin(e,!isLogin)}>
-                Switch to {isLogin ? 'Sign Up' : 'Login'}
+                  onClick={(e) => handleSetLogin(e,!isLogin)}
+                  disabled={isOffline}>
+                Αλλαγή σε { isLogin ? 'Εγγραφή' : 'Σύνδεση'}
                 </button>
+                {errors.length > 0 && 
+                  <button className="btn btn-primary ml-2" 
+                  onClick={(e) => handleClear(e)}>Καθαρισμός</button>
+                }
             </div>
           </form>
+          { errors.length > 0 && errors.map(error => <div className="alert alert-danger mt-3" role='alert'>{error}</div>)   }
         </div>
       </div>
     </div>

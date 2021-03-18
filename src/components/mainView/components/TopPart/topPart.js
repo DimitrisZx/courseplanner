@@ -8,7 +8,7 @@ import { AiFillCaretDown, AiFillCaretRight } from 'react-icons/ai'
 
 const TopPart = () => {
   const [oldSemestersHidden, setOldSemestersHidden] = useState(false)
-  const [currentSemesterHidden, setCurrentSemesterHidden] = useState(true)
+  const [currentSemesterHidden, setCurrentSemesterHidden] = useState(false)
   const lessons = useSelector(selectLessons);
   const { currentSemester } = useSelector(selectUser);
   
@@ -66,7 +66,7 @@ const TopPart = () => {
                     <br />
                     <h6>Εργαστήρια:</h6>
                     {prevSemesterLessons.filter(lesson => lesson.type === 'workshop').map((lesson, index) => <LessonCard key={index} lesson={lesson} />)}
-                </>}
+                </> }
               </div>
             </>}
       </div>

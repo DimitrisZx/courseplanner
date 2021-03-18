@@ -32,7 +32,6 @@ const LessonCard = ({ lesson }) => {
             const lessonIndex = hour.lessons.indexOf(lName);
             hour.lessons.splice(lessonIndex, 1)
           })
-
         } else if (type === 'theory') {
           hourToUpdate.writes -= 1;
           const lessonIndex = hourToUpdate.lessons.indexOf(lName);

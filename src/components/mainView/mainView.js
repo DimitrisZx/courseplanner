@@ -9,12 +9,10 @@ import {
   clearLocalSchedule
 } from 'features/store/stateSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 const MainView = () => {
   const classes = useStyle();
   const dispatch = useDispatch();
-  const history = useHistory();
   const selectedlessons = useSelector(selectSelectedLessons);
   const user = useSelector(selectUser)
   useEffect(() => { dispatch(getLessonsAsync({uuid: user.uuid, semester: 'springSemester', schoolCode: user.schoolCode})) }, []);
@@ -33,10 +31,11 @@ const MainView = () => {
     <div className={classes.mainView}>
       {!isMobile && <TopPart />}
       <BottomPartv3 />
+      {!isMobile &&
       <div className="buttons d-flex justify-content-end">
         <button className={'btn btn-primary shadow-sm'} onClick={handleSaveSchedule}>Αποθήκευση</button>
         <button className={'btn btn-danger ml-2 shadow-sm'} onClick={handleClearSchedule}>Καθαρισμός</button>
-      </div>
+      </div>}
     </div>
   )
 }

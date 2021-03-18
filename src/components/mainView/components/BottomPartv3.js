@@ -39,7 +39,7 @@ const DayRowComponent = ({ dayName, availableHours }) => {
       {
         dayHours.map((dayHour, idx) => {
           const lessonNames = dayHour.lessonsInHour.reduce(lessonNamesReducer, ``);
-          return <td className={`bg-${dayHour.hourColor || 'd5y'} border text-light `} key={idx}>
+          return <td className={`bg-${dayHour.hourColor || 'd5y'} text-small border text-light `} key={idx}>
             {lessonNames}
           </td>
         })

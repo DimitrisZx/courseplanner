@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { genDaysTable } from 'utils';
 import axios from 'axios';
-
-const baseUrl = 'http://localhost:5000/';
+// const baseUrl = 'http://localhost:5000/';
+const baseUrl = 'https://courseplannerlis.herokuapp.com/';
 const headers = (method, data = {}) => ({
   method, // *GET, POST, PUT, DELETE, etc.
   mode: 'cors', // no-cors, *cors, same-origin
@@ -10,7 +10,8 @@ const headers = (method, data = {}) => ({
   credentials: 'same-origin', // include, *same-origin, omit
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': 'http://localhost:5000',
+    'Access-Control-Allow-Origin': 'https://courseplannerlis.herokuapp.com/',
+    // 'Access-Control-Allow-Origin': 'http://localhost:5000/',
     'Access-Control-Allow-Credentials': 'true'
   },
   redirect: 'follow', // manual, *follow, error
@@ -163,6 +164,7 @@ export const stateSlice = createSlice({
     lessonNames: [],
     filesToUpload: [],
     availableSchoolNames: [],
+    errors: [],
   },
   reducers: {
     updateRegisteredLessons: (state, payload) => {
@@ -186,19 +188,32 @@ export const stateSlice = createSlice({
       state.email = payload.email;
     },
     logout: state => {
-      state.loggedIn = false;
+      state.loggedIn = false
       state.user = {
-        currentSemester: '0',
-        name: '',
-        AM: '',
+        localId: '',
+        currentSemester: '',
+        name: ' ',
+        registryNumber: '',
         sessionExpiresIn: 0,
         email: '',
-        uuid: ''
-      };
+        isAdmin: false,
+        schoolCode: '',
+      }
+      state.registeredLessons = []
+      state.selectedLessons = []
+      state.tableValues = genDaysTable(5, 13)
+      state.asyncLessons = []
+      state.lessonNames = []
+      state.filesToUpload = []
+      state.availableSchoolNames = []
+      state.errors = []
     },
     clearLocalSchedule: state => {
       state.selectedLessons = []
-    }
+    },
+    clearErrors: state => {
+      state.errors = []
+    },
   },
   extraReducers: {
     [getLessonsAsync.fulfilled]: (state, { payload }) => {
@@ -206,6 +221,7 @@ export const stateSlice = createSlice({
       state.lessonNames = payload.lessonNames;
     },
     [requestLogin.fulfilled]: (state, { payload }) => {
+
       const { email, expiresIn, localId, userType } = payload.payload;
       state.loggedIn = true;
       state.user.email = email;
@@ -221,6 +237,11 @@ export const stateSlice = createSlice({
       state.user.schoolCode = payload.payload.schoolCode
     },
     [requestSignUp.fulfilled]: (state, { payload }) => {
+      console.log(payload)
+      if (payload?.payload?.errorMsg) { 
+        state.errors.push(payload?.payload?.errorMsg)
+        return;
+      }
       state.user.localId = payload.payload.localId;
       state.loggedIn = true;
       state.user.email = payload.payload.email;
@@ -228,6 +249,7 @@ export const stateSlice = createSlice({
       state.user.currentSemester = payload.payload.semester;
       state.user.registryNumber = payload.payload.registryNumber;
       state.user.uuid = payload.payload.uuid;
+      state.user.schoolCode = payload.payload.schoolCode;
     },
     [getSavedSelectedLessons]: (state, { payload }) => {
       state.selectedLessons = payload.payload.selectedLessons;
@@ -250,6 +272,7 @@ export const {
   clearLocalSchedule,
   updateRegisteredLessons,
   addFileToUpload,
+  clearErrors
 } = stateSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -274,4 +297,5 @@ export const selectLessonNames = state => state.state.lessonNames;
 export const selectFilesToUpload = state => state.state.filesToUpload;
 export const selectAvailableSchoolNames = state => state.state.availableSchoolNames;
 export const selectSchoolCode = state => state.state.user.schoolCode;
+export const selectErrors = state => state.state.errors;
 export default stateSlice.reducer;
