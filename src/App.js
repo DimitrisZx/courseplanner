@@ -34,7 +34,7 @@ function App() {
             <AdminPanel />
           </PrivateRoute>
           <PrivateRoute exact path='/my-schedule'>
-            {!isMobile && <Sidebar />}
+            <Sidebar show={isMobile} />
             <MainView />
           </PrivateRoute>
         </div>
