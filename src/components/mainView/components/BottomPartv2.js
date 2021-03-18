@@ -75,29 +75,3 @@ const BottomPartv2 = () => {
 }
 
 export { BottomPartv2 }
-
-
-  // OLD CODE: (remove later)
-  
-  // return (
-  //   <tr>
-  //     <th scope="row">{dayName}</th>
-  //     {
-  //       repeatX(availableHours).map((_, index) => {
-  //         const cellTime = index + 8
-  //         let isCellFilled = false;
-  //         let lessonName = '-';
-  //         let lessonColor;
-  //         filledHours.forEach(hourTuple => {
-  //           if (cellTime >= hourTuple[0] && cellTime <= hourTuple[1]) {
-  //             const currentLesson = lessonsInDay.find(lesson => lesson.hours[0] === hourTuple[0] && lesson.hours[1] === hourTuple[1]);
-  //             lessonName = cellTime === hourTuple[0] && currentLesson.name
-  //             isCellFilled = true;
-  //             lessonColor = currentLesson.semester === currentSemester ? 'success' : 'secondary';
-  //           }
-  //         })
-  //         return <td className={`bg-${isCellFilled ? lessonColor : 'light'}`} key={index}>{lessonName}</td>
-  //       })
-  //     }
-  //   </tr>
-  // )

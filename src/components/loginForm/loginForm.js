@@ -26,7 +26,6 @@ const LoginForm = () => {
   console.log(isOffline)
 
   if (userLoggedIn) history.push("/my-schedule");
-  // dispatch(requestLogin({ email: 'myemail@eg.gr', password: '1234', history, registryNumber: '14024' }))
   function handleClick(e) {
     e.preventDefault();
     if (!(email && password)) return;

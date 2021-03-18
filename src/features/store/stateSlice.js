@@ -36,9 +36,7 @@ export const updateSchedule = createAsyncThunk(
   'app/updateSchedule',
   async (payload, thunkAPI) => {
     const URL = baseUrl + 'updateSchedule';
-    // const { lessonSchedule } = payload;
     console.log(payload)
-    const {userId, selectedLessons} = payload;
     const response = await fetch(URL, headers('POST',  payload));
     const parsed = await response.json();
     return parsed;
@@ -48,7 +46,6 @@ export const updateSchedule = createAsyncThunk(
 export const getLessonsAsync = createAsyncThunk(
   'app/fetchLessons',
   async (payload, thunkAPI) => {
-    // const URL = baseUrl + 'lessons?uuid="' + payload.uuid;
     const URL = `${baseUrl}lessons?uuid=${payload.uuid}&schoolCode=${payload.schoolCode}&semester=${payload.semester}`;
     const response = await fetch(URL);
     const parsed = await response.json();
@@ -115,7 +112,7 @@ export const getSavedSelectedLessons = createAsyncThunk(
   async (payload, thunkAPI) => {
     const { rn } = payload;
     const URL = baseUrl + 'getSavedSelectedLessons';
-    const response = await fetch(URL, {...headers('POST', {rn})})
+    await fetch(URL, {...headers('POST', {rn})})
   }
 );
 export const requestProfileEdit = createAsyncThunk(
@@ -126,22 +123,9 @@ export const requestProfileEdit = createAsyncThunk(
     const URL = baseUrl + 'requestProfileEdit';
     const response = await fetch(URL, {...headers('POST', {name, rn, semester, localId})})
     const parsed = await response.json();
-    if (parsed.success) {
-      // history.push('/my-schedule')
-    } else {
-      console.log(parsed.errorMsg)
-    }
     return parsed
   }
 );
-
-// export const updateLessonsAsync = createAsyncThunk(
-//   'app/updateLessonsAsync',
-//   async (_, thunkAPI) => {
-//     const URL = baseUrl + 'updateSelectedLessons';
-//     const response = await fetch(URL, { ...headers('POST', { msg: 'yo' }) });
-//   }
-// )
 
 export const stateSlice = createSlice({
   name: 'state',
@@ -274,16 +258,6 @@ export const {
   addFileToUpload,
   clearErrors
 } = stateSlice.actions;
-
-// The function below is called a thunk and allows us to perform async logic. It
-// can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
-// will call the thunk with the `dispatch` function as the first argument. Async
-// code can then be executed and other actions can be dispatched
-export const incrementAsync = amount => dispatch => {
-  setTimeout(() => {
-    // dispatch(incrementByAmount(amount));
-  }, 1000);
-};
 
 export const selectUser = state => state.state.user;
 export const selectLessons = state => state.state.asyncLessons;

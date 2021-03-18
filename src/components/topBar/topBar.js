@@ -18,10 +18,7 @@ export default function TopBar() {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white border shadow-sm">
-      <Link className="navbar-brand" to="/my-schedule">My Schedule</Link>
-      {/* <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span className="navbar-toggler-icon"></span>
-      </button> */}
+      <Link className="navbar-brand" to="/my-schedule">Course Planner</Link>
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
           <li className="nav-item active">
@@ -29,7 +26,6 @@ export default function TopBar() {
           </li>
           {isLoggedIn && 
             <>
-              {/* <li className="nav-item"><Link className="nav-link" to="/edit-profile">Ρυθμίσεις</Link></li> */}
               <li className="nav-item"><Link className="nav-link" to="/edit-selected-lessons">Επιλεγμένα Μαθήματα</Link></li>
             </>
           }
