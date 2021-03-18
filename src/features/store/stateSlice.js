@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { genDaysTable } from 'utils';
 import axios from 'axios';
-// const baseUrl = 'http://localhost:5000/';
+/* activate next line for local development and deactivate heroku */
+// const baseUrl = 'http://localhost:5000/'; 
 const baseUrl = 'https://courseplannerlis.herokuapp.com/';
 const headers = (method, data = {}) => ({
   method, // *GET, POST, PUT, DELETE, etc.
@@ -10,8 +11,9 @@ const headers = (method, data = {}) => ({
   credentials: 'same-origin', // include, *same-origin, omit
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': 'https://courseplannerlis.herokuapp.com/',
+    /* activate next line for local development and deactivate heroku */
     // 'Access-Control-Allow-Origin': 'http://localhost:5000/',
+    'Access-Control-Allow-Origin': 'https://courseplannerlis.herokuapp.com/',
     'Access-Control-Allow-Credentials': 'true'
   },
   redirect: 'follow', // manual, *follow, error
